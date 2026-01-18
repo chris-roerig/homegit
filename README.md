@@ -71,8 +71,8 @@ homegit config     # Edit configuration
 homegit start      # Start server
 homegit stop       # Stop server
 homegit status     # Check if running
-homegit list       # List repositories
-homegit clone      # Clone from server
+homegit list       # List repositories (local or remote)
+homegit clone      # Clone from server (interactive if no name given)
 homegit backup     # Backup repository
 homegit remove     # Remove repository
 homegit logs       # View server logs
