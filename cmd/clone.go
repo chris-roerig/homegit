@@ -69,7 +69,7 @@ func getRepoList(cfg *config.Config) ([]string, error) {
 	if cfg.ServerHost == "localhost" || cfg.ServerHost == "127.0.0.1" {
 		return getLocalRepoList(cfg.ReposDir)
 	}
-	
+
 	// Otherwise, get list from remote server via SSH
 	return getRemoteRepoList(cfg)
 }

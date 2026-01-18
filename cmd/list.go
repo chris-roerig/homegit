@@ -16,7 +16,7 @@ func List(cfg *config.Config) error {
 	if cfg.ServerHost == "localhost" || cfg.ServerHost == "127.0.0.1" {
 		return listLocal(cfg)
 	}
-	
+
 	// Otherwise, list from remote server via SSH
 	return listRemote(cfg)
 }

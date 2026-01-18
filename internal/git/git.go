@@ -44,7 +44,7 @@ func (c *Command) Execute(reposDir string, stdin io.Reader, stdout, stderr io.Wr
 	// Remove leading slash if present (Git sends paths like /repo.git)
 	repoPath := strings.TrimPrefix(c.RepoPath, "/")
 	cleanPath := filepath.Clean(repoPath)
-	
+
 	// Reject paths with .. or absolute paths after cleaning
 	if strings.Contains(cleanPath, "..") {
 		return fmt.Errorf("invalid repository path (contains ..): %s", c.RepoPath)
@@ -90,7 +90,7 @@ func ensureRepo(path string) error {
 	// Lock to prevent race condition when multiple pushes try to create same repo
 	repoCreateMutex.Lock()
 	defer repoCreateMutex.Unlock()
-	
+
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			return fmt.Errorf("failed to create directory: %w", err)
