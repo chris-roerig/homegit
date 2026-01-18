@@ -59,7 +59,7 @@ jobs:
           homegit-linux-arm64
           homegit-windows-amd64.exe
           checksums.txt
-        body_path: CHANGELOG.md
+        body_path: docs/CHANGELOG.md
         draft: false
         prerelease: false
       env:
