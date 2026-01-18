@@ -41,9 +41,16 @@ func ParseCommand(cmdStr string) (*Command, error) {
 
 func (c *Command) Execute(reposDir string, stdin io.Reader, stdout, stderr io.Writer) error {
 	// Clean and validate repository path to prevent directory traversal
-	cleanPath := filepath.Clean(c.RepoPath)
-	if strings.Contains(cleanPath, "..") || filepath.IsAbs(cleanPath) {
-		return fmt.Errorf("invalid repository path: %s", c.RepoPath)
+	// Remove leading slash if present (Git sends paths like /repo.git)
+	repoPath := strings.TrimPrefix(c.RepoPath, "/")
+	cleanPath := filepath.Clean(repoPath)
+	
+	// Reject paths with .. or absolute paths after cleaning
+	if strings.Contains(cleanPath, "..") {
+		return fmt.Errorf("invalid repository path (contains ..): %s", c.RepoPath)
+	}
+	if filepath.IsAbs(cleanPath) {
+		return fmt.Errorf("invalid repository path (absolute): %s -> %s", c.RepoPath, cleanPath)
 	}
 
 	fullPath := filepath.Join(reposDir, cleanPath)
