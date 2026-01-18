@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Get version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Build binaries
+      run: |
+        # macOS AMD64
+        GOOS=darwin GOARCH=amd64 go build -o homegit-darwin-amd64 -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"
+        
+        # macOS ARM64
+        GOOS=darwin GOARCH=arm64 go build -o homegit-darwin-arm64 -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"
+        
+        # Linux AMD64
+        GOOS=linux GOARCH=amd64 go build -o homegit-linux-amd64 -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"
+        
+        # Linux ARM64
+        GOOS=linux GOARCH=arm64 go build -o homegit-linux-arm64 -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"
+        
+        # Windows AMD64
+        GOOS=windows GOARCH=amd64 go build -o homegit-windows-amd64.exe -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"
+
+    - name: Create checksums
+      run: |
+        sha256sum homegit-* > checksums.txt
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          homegit-darwin-amd64
+          homegit-darwin-arm64
+          homegit-linux-amd64
+          homegit-linux-arm64
+          homegit-windows-amd64.exe
+          checksums.txt
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update Homebrew tap
+      run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        echo "Calculating SHA256 for Homebrew formula..."
+        sleep 5  # Wait for release tarball to be available
+        SHA=$(curl -sL https://github.com/chris-roerig/homegit/archive/refs/tags/${VERSION}.tar.gz | shasum -a 256 | cut -d' ' -f1)
+        echo "SHA256: $SHA"
+        
+        # Clone homebrew tap
+        git clone https://github.com/chris-roerig/homebrew-homegit.git tap
+        cd tap
+        
+        # Update formula
+        sed -i "s|archive/refs/tags/v[0-9.]*\.tar\.gz|archive/refs/tags/${VERSION}.tar.gz|g" Formula/homegit.rb
+        sed -i "s/sha256 \"[a-f0-9]*\"/sha256 \"$SHA\"/g" Formula/homegit.rb
+        
+        # Commit and push
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add Formula/homegit.rb
+        git commit -m "Update homegit to ${VERSION}" || exit 0
+        git push https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/chris-roerig/homebrew-homegit.git main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
