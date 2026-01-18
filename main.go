@@ -61,11 +61,11 @@ func main() {
 			os.Exit(1)
 		}
 	case "clone":
-		if len(os.Args) < 3 {
-			fmt.Fprintf(os.Stderr, "Usage: homegit clone <repo-name>\n")
-			os.Exit(1)
+		var repoName string
+		if len(os.Args) >= 3 {
+			repoName = os.Args[2]
 		}
-		if err := cmd.Clone(cfg, os.Args[2]); err != nil {
+		if err := cmd.Clone(cfg, repoName); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
