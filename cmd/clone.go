@@ -65,11 +65,21 @@ func Clone(cfg *config.Config, repoName string) error {
 }
 
 func getRepoList(cfg *config.Config) ([]string, error) {
-	if err := os.MkdirAll(cfg.ReposDir, 0755); err != nil {
+	// If server_host is localhost, read local directory
+	if cfg.ServerHost == "localhost" || cfg.ServerHost == "127.0.0.1" {
+		return getLocalRepoList(cfg.ReposDir)
+	}
+	
+	// Otherwise, get list from remote server via SSH
+	return getRemoteRepoList(cfg)
+}
+
+func getLocalRepoList(reposDir string) ([]string, error) {
+	if err := os.MkdirAll(reposDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create repos directory: %w", err)
 	}
 
-	entries, err := os.ReadDir(cfg.ReposDir)
+	entries, err := os.ReadDir(reposDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read repos directory: %w", err)
 	}
@@ -78,6 +88,26 @@ func getRepoList(cfg *config.Config) ([]string, error) {
 	for _, entry := range entries {
 		if entry.IsDir() && strings.HasSuffix(entry.Name(), ".git") {
 			repos = append(repos, entry.Name())
+		}
+	}
+
+	return repos, nil
+}
+
+func getRemoteRepoList(cfg *config.Config) ([]string, error) {
+	// Use SSH to list repos on remote server
+	cmd := exec.Command("ssh", "-p", strconv.Itoa(cfg.Port), cfg.ServerHost, "ls", "-1", cfg.ReposDir)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("failed to list remote repos: %w", err)
+	}
+
+	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
+	repos := []string{}
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line != "" && strings.HasSuffix(line, ".git") {
+			repos = append(repos, line)
 		}
 	}
 
