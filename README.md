@@ -91,6 +91,22 @@ Edit with `homegit config` or directly at `~/.homegit/config`:
 - `repos_dir` - Repository storage location
 - `default_branch` - Default branch for new repos (default: main)
 
+## Auto-start on Boot
+
+**Using Homebrew:**
+```bash
+brew services start homegit
+```
+
+This starts homegit now and automatically on every boot.
+
+**Manage the service:**
+```bash
+brew services stop homegit     # Stop service
+brew services restart homegit  # Restart service
+brew services list             # List all services
+```
+
 ## Security
 
 **homegit has NO authentication.** Anyone who can reach the server can push/pull.
