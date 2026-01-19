@@ -8,14 +8,32 @@
 
 Stop pushing your side projects to GitHub. Stop paying for private repos. Stop worrying about rate limits. Run your own Git server in 30 seconds.
 
+## Quick Start
+
+**Using [Homebrew](https://brew.sh)**
+
 ```bash
 brew install chris-roerig/homegit/homegit
-homegit start
+homegit setup
+```
+
+**Or clone this repo and run**
+
+```bash
+make install
+```
+
+**Once installed, find a repo and start using homegit**
+
+```bash
 cd my-project
 homegit init
 git add .
 git commit -m "Initial commit"
 git push -u origin main
+
+# If using multiple computers, clone the project by running
+homegit clone  # This will show you a list of repos to clone
 ```
 
 That's it. Your code is now on your machine, accessible from anywhere on your network.
@@ -34,33 +52,6 @@ That's it. Your code is now on your machine, accessible from anywhere on your ne
 - Public-facing servers
 - Multi-user teams with access control
 - Anything requiring security/authentication
-
-## Quick Start
-
-**Install:**
-```bash
-brew install chris-roerig/homegit/homegit
-```
-
-**First-time setup:**
-```bash
-homegit setup
-# Choose where to store repos (this computer or connect to another)
-```
-
-**Initialize project:**
-```bash
-cd your-project
-homegit init
-git add .
-git commit -m "Initial commit"
-git push -u origin main
-```
-
-**Clone from another computer:**
-```bash
-git clone ssh://192.168.1.100:2222/your-project.git
-```
 
 ## Commands
 
