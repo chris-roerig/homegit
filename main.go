@@ -20,6 +20,15 @@ func main() {
 		os.Exit(0)
 	}
 
+	// 'update' manages the binary itself and does not require a loaded config.
+	if len(os.Args) > 1 && os.Args[1] == "update" {
+		if err := cmd.Update(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v\n", err)
