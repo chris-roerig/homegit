@@ -24,7 +24,7 @@ type Server struct {
 }
 
 func NewServer(cfg *config.Config) (*Server, error) {
-	hostKey, err := loadOrGenerateHostKey(cfg.HostKey)
+	hostKey, err := loadOrGenerateHostKey(cfg.Server.HostKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load host key: %w", err)
 	}
@@ -38,14 +38,14 @@ func NewServer(cfg *config.Config) (*Server, error) {
 }
 
 func (s *Server) Start() error {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.cfg.Port))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.cfg.Server.Port))
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 	defer listener.Close()
 
-	fmt.Printf("SSH server listening on port %d\n", s.cfg.Port)
-	fmt.Printf("Repositories: %s\n", s.cfg.ReposDir)
+	fmt.Printf("SSH server listening on port %d\n", s.cfg.Server.Port)
+	fmt.Printf("Repositories: %s\n", s.cfg.Server.ReposDir)
 
 	// Setup signal handling for graceful shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -132,7 +132,7 @@ func (s *Server) handleSession(channel ssh.Channel, requests <-chan *ssh.Request
 				return
 			}
 
-			if err := cmd.Execute(s.cfg.ReposDir, channel, channel, channel.Stderr()); err != nil {
+			if err := cmd.Execute(s.cfg.Server.ReposDir, channel, channel, channel.Stderr()); err != nil {
 				fmt.Fprintf(channel.Stderr(), "Error: %v\n", err)
 				channel.SendRequest("exit-status", false, []byte{0, 0, 0, 1})
 				return

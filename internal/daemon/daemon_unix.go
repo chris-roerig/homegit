@@ -23,7 +23,7 @@ func Start(cfg *config.Config) error {
 		return err
 	}
 
-	logDir := filepath.Dir(cfg.PIDFile)
+	logDir := filepath.Dir(cfg.Server.PIDFile)
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func Start(cfg *config.Config) error {
 		return err
 	}
 
-	if err := os.WriteFile(cfg.PIDFile, []byte(fmt.Sprintf("%d", cmd.Process.Pid)), 0644); err != nil {
+	if err := os.WriteFile(cfg.Server.PIDFile, []byte(fmt.Sprintf("%d", cmd.Process.Pid)), 0644); err != nil {
 		return err
 	}
 
@@ -55,29 +55,29 @@ func Start(cfg *config.Config) error {
 }
 
 func Stop(cfg *config.Config) error {
-	pid, err := readPID(cfg.PIDFile)
+	pid, err := readPID(cfg.Server.PIDFile)
 	if err != nil {
 		return fmt.Errorf("server is not running")
 	}
 
 	process, err := os.FindProcess(pid)
 	if err != nil {
-		os.Remove(cfg.PIDFile)
+		os.Remove(cfg.Server.PIDFile)
 		return fmt.Errorf("server is not running")
 	}
 
 	if err := process.Signal(syscall.SIGTERM); err != nil {
-		os.Remove(cfg.PIDFile)
+		os.Remove(cfg.Server.PIDFile)
 		return fmt.Errorf("failed to stop server: %w", err)
 	}
 
-	os.Remove(cfg.PIDFile)
+	os.Remove(cfg.Server.PIDFile)
 	return nil
 }
 
 func Status(cfg *config.Config) error {
 	if IsRunning(cfg) {
-		pid, _ := readPID(cfg.PIDFile)
+		pid, _ := readPID(cfg.Server.PIDFile)
 		fmt.Printf("Server is running (PID: %d)\n", pid)
 		return nil
 	}
@@ -86,7 +86,7 @@ func Status(cfg *config.Config) error {
 }
 
 func IsRunning(cfg *config.Config) bool {
-	pid, err := readPID(cfg.PIDFile)
+	pid, err := readPID(cfg.Server.PIDFile)
 	if err != nil {
 		return false
 	}

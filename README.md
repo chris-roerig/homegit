@@ -77,19 +77,31 @@ Edit with `homegit config` or directly at `~/.homegit/config`:
 
 ```json
 {
-  "port": 2222,
-  "server_host": "localhost",
-  "repos_dir": "/Users/you/.homegit/repos",
   "default_branch": "main",
-  "backup_dir": "/Users/you/.homegit/backups"
+  "backup_dir": "/Users/you/.homegit/backups",
+  "name": "my-machine",
+  "server": {
+    "port": 2222,
+    "repos_dir": "/Users/you/.homegit/repos",
+    "host_key": "/Users/you/.homegit/host_key",
+    "pid_file": "/Users/you/.homegit/homegit.pid"
+  },
+  "client": {
+    "host": "",
+    "port": 2222
+  }
 }
 ```
 
-**Key settings:**
-- `server_host` - Where repos are stored (localhost or another computer's IP/hostname)
-- `port` - SSH server port (default: 2222)
-- `repos_dir` - Repository storage location
-- `default_branch` - Default branch for new repos (default: main)
+Config is organized by role:
+
+- **Top level** - shared settings: `default_branch` (default branch for new repos), `backup_dir`, and `name` (identifies this device; reserved for future use).
+- **`server`** - used when this machine *hosts* repos (`serve`/`start`/`stop`/`status`): `port` to listen on, `repos_dir`, `host_key`, `pid_file`.
+- **`client`** - used when connecting to *another* homegit server (`list`/`clone`): `host` and `port`. Leave `host` empty to operate against the local server.
+
+> **Upgrading from an older version?** Your existing config is migrated to this
+> format automatically on first run, and the original is saved as
+> `~/.homegit/config.bak`. No manual changes are needed.
 
 ## Auto-start on Boot
 

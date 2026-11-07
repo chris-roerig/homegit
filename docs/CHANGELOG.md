@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-07
+
+### Changed
+- **Config is now organized into role-based sections.** Settings are split into
+  a top-level area for shared, role-agnostic values (`default_branch`,
+  `backup_dir`, and a reserved `name`) plus a `server` section (`port`,
+  `repos_dir`, `host_key`, `pid_file`) used when hosting, and a `client` section
+  (`host`, `port`) used when connecting to another homegit server. This removes
+  the previous overloading of `port` and the `server_host == localhost`
+  heuristic, making it clear which settings apply to hosting versus connecting.
+
+### Added
+- Existing flat (pre-1.1.0) configs are **migrated automatically** on first run.
+  The original file is backed up alongside the new one (`config.bak`) and the
+  server/client role is inferred from the previous `server_host` value. No
+  manual action is required.
+- Reserved an optional top-level `name` field (defaults to the machine's
+  hostname) for future device-identification features.
+
+[1.1.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.1.0
+
 ## [1.0.5] - 2026-11-07
 
 ### Fixed

@@ -57,11 +57,12 @@ func Clone(cfg *config.Config, repoName string) error {
 		repoName = repoName + ".git"
 	}
 
-	// Only validate repository existence locally when the server is this
-	// machine. For a remote server the repo lives on the server's disk, not in
-	// our local ReposDir, so a local stat would wrongly report "not found".
-	if isLocalServer(cfg) {
-		repoPath := filepath.Join(cfg.ReposDir, repoName)
+	// Only validate repository existence locally when operating against the
+	// local server. For a remote server the repo lives on the server's disk,
+	// not in our local repos dir, so a local stat would wrongly report
+	// "not found".
+	if !cfg.IsRemoteClient() {
+		repoPath := filepath.Join(cfg.Server.ReposDir, repoName)
 		if _, err := os.Stat(repoPath); os.IsNotExist(err) {
 			return fmt.Errorf("repository not found: %s", repoName)
 		}
@@ -75,7 +76,8 @@ func Clone(cfg *config.Config, repoName string) error {
 		return fmt.Errorf("destination path %q already exists", targetDir)
 	}
 
-	cmd := exec.Command("git", "clone", fmt.Sprintf("ssh://%s:%d/%s", cfg.ServerHost, cfg.Port, repoName), targetDir)
+	cloneURL := fmt.Sprintf("ssh://%s:%d/%s", cfg.ClientHost(), cfg.ClientPort(), repoName)
+	cmd := exec.Command("git", "clone", cloneURL, targetDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -83,15 +85,10 @@ func Clone(cfg *config.Config, repoName string) error {
 	return cmd.Run()
 }
 
-// isLocalServer reports whether the configured server is this machine.
-func isLocalServer(cfg *config.Config) bool {
-	return cfg.ServerHost == "localhost" || cfg.ServerHost == "127.0.0.1"
-}
-
 func getRepoList(cfg *config.Config) ([]string, error) {
-	// If the server is this machine, read the local directory
-	if isLocalServer(cfg) {
-		return getLocalRepoList(cfg.ReposDir)
+	// If operating against the local server, read the local directory.
+	if !cfg.IsRemoteClient() {
+		return getLocalRepoList(cfg.Server.ReposDir)
 	}
 
 	// Otherwise, get list from remote server via SSH

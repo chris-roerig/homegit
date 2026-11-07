@@ -6,23 +6,27 @@ import (
 	"github.com/chris-roerig/homegit/internal/config"
 )
 
-func TestIsLocalServer(t *testing.T) {
+// TestCloneRoleSelection verifies that clone's local-vs-remote decision is
+// driven by the client configuration via IsRemoteClient.
+func TestCloneRoleSelection(t *testing.T) {
 	tests := []struct {
-		host string
-		want bool
+		name       string
+		clientHost string
+		wantRemote bool
 	}{
-		{"localhost", true},
-		{"127.0.0.1", true},
-		{"10.0.0.142", false},
-		{"example.local", false},
-		{"", false},
+		{"no client host -> local", "", false},
+		{"localhost -> local", "localhost", false},
+		{"loopback -> local", "127.0.0.1", false},
+		{"remote ip -> remote", "10.0.0.142", true},
+		{"remote host -> remote", "house.local", true},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.host, func(t *testing.T) {
-			cfg := &config.Config{ServerHost: tt.host}
-			if got := isLocalServer(cfg); got != tt.want {
-				t.Errorf("isLocalServer(%q) = %v, want %v", tt.host, got, tt.want)
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := &config.Config{}
+			cfg.Client.Host = tt.clientHost
+			if got := cfg.IsRemoteClient(); got != tt.wantRemote {
+				t.Errorf("IsRemoteClient() with host %q = %v, want %v", tt.clientHost, got, tt.wantRemote)
 			}
 		})
 	}

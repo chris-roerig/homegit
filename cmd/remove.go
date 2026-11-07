@@ -19,7 +19,7 @@ func Remove(cfg *config.Config, repoName string) error {
 		repoName = repoName + ".git"
 	}
 
-	repoPath := filepath.Join(cfg.ReposDir, repoName)
+	repoPath := filepath.Join(cfg.Server.ReposDir, repoName)
 	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
 		return fmt.Errorf("repository not found: %s", repoName)
 	}
@@ -42,7 +42,7 @@ func Remove(cfg *config.Config, repoName string) error {
 }
 
 func removeInteractive(cfg *config.Config) error {
-	entries, err := os.ReadDir(cfg.ReposDir)
+	entries, err := os.ReadDir(cfg.Server.ReposDir)
 	if err != nil {
 		return fmt.Errorf("failed to read repos directory: %w", err)
 	}
@@ -79,7 +79,7 @@ func removeInteractive(cfg *config.Config) error {
 	}
 
 	selectedRepo := repos[choice-1]
-	repoPath := filepath.Join(cfg.ReposDir, selectedRepo)
+	repoPath := filepath.Join(cfg.Server.ReposDir, selectedRepo)
 
 	fmt.Printf("\nRemove repository '%s'? (y/N): ", selectedRepo)
 	var response string

@@ -22,7 +22,7 @@ const sshConnectTimeoutSecs = 5
 // messages instead of surfacing a bare "exit status N".
 func remoteRepoList(cfg *config.Config) ([]string, error) {
 	args := []string{
-		"-p", strconv.Itoa(cfg.Port),
+		"-p", strconv.Itoa(cfg.ClientPort()),
 		"-o", "BatchMode=yes",
 		// homegit is a no-auth server for trusted networks and uses an
 		// auto-generated host key, so auto-accept a new host key rather than
@@ -30,7 +30,7 @@ func remoteRepoList(cfg *config.Config) ([]string, error) {
 		// key still fails, which surfaces unexpected host identity changes.
 		"-o", "StrictHostKeyChecking=accept-new",
 		"-o", fmt.Sprintf("ConnectTimeout=%d", sshConnectTimeoutSecs),
-		cfg.ServerHost,
+		cfg.ClientHost(),
 		git.ListCommand,
 	}
 
@@ -58,7 +58,7 @@ func remoteRepoList(cfg *config.Config) ([]string, error) {
 // classifySSHError converts a failed ssh invocation into a user-facing error
 // with guidance. stderr is the captured standard error from ssh.
 func classifySSHError(cfg *config.Config, runErr error, stderr string) error {
-	target := fmt.Sprintf("%s:%d", cfg.ServerHost, cfg.Port)
+	target := fmt.Sprintf("%s:%d", cfg.ClientHost(), cfg.ClientPort())
 	s := strings.ToLower(stderr)
 	trimmed := strings.TrimSpace(stderr)
 
@@ -68,9 +68,9 @@ func classifySSHError(cfg *config.Config, runErr error, stderr string) error {
 	case strings.Contains(s, "connection timed out") || strings.Contains(s, "operation timed out") || strings.Contains(s, "timed out"):
 		return fmt.Errorf("could not connect to %s: connection timed out. Check that the server is powered on and reachable on your network", target)
 	case strings.Contains(s, "no route to host"):
-		return fmt.Errorf("could not reach %s: no route to host. Check the server_host address and your network connection", target)
+		return fmt.Errorf("could not reach %s: no route to host. Check the client host address and your network connection", target)
 	case strings.Contains(s, "could not resolve") || strings.Contains(s, "name or service not known") || strings.Contains(s, "nodename nor servname"):
-		return fmt.Errorf("could not resolve host %q. Check server_host in your config (run 'homegit config')", cfg.ServerHost)
+		return fmt.Errorf("could not resolve host %q. Check the client host in your config (run 'homegit config')", cfg.ClientHost())
 	case strings.Contains(s, "permission denied"):
 		return fmt.Errorf("connection to %s was refused (permission denied). Verify the server configuration", target)
 	case strings.Contains(s, "host key verification failed") || strings.Contains(s, "remote host identification has changed"):
