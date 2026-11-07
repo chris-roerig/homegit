@@ -6,10 +6,47 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/chris-roerig/homegit/internal/config"
 )
+
+// normalizeRepoName converts a raw name (typically a parent folder name) into
+// a clean repository name: lowercased, with runs of whitespace, hyphens, and
+// dots collapsed to a single underscore, any other non-alphanumeric characters
+// stripped, and duplicate/edge underscores removed. For example:
+//
+//	"Foo Bar"   -> "foo_bar"
+//	"  My-App. " -> "my_app"
+//
+// It returns an empty string if nothing usable remains.
+func normalizeRepoName(raw string) string {
+	s := strings.ToLower(strings.TrimSpace(raw))
+
+	var b strings.Builder
+	for _, r := range s {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+			b.WriteRune(r)
+		case r == ' ' || r == '\t' || r == '-' || r == '.' || r == '_':
+			// Separators collapse to underscore (dedup handled below).
+			b.WriteRune('_')
+		default:
+			// Drop any other character (punctuation, unicode, etc.).
+		}
+	}
+
+	// Collapse consecutive underscores and trim leading/trailing ones.
+	parts := strings.Split(b.String(), "_")
+	cleaned := parts[:0]
+	for _, p := range parts {
+		if p != "" {
+			cleaned = append(cleaned, p)
+		}
+	}
+	return strings.Join(cleaned, "_")
+}
 
 func Init() error {
 	cfg, err := config.Load()
@@ -22,7 +59,10 @@ func Init() error {
 	if err != nil {
 		return fmt.Errorf("failed to get current directory: %w", err)
 	}
-	repoName := filepath.Base(cwd)
+	repoName := normalizeRepoName(filepath.Base(cwd))
+	if repoName == "" {
+		return fmt.Errorf("could not derive a valid repository name from %q", filepath.Base(cwd))
+	}
 
 	// Check if already a git repo
 	if _, err := os.Stat(".git"); err == nil {

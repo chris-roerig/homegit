@@ -27,6 +27,7 @@ func Help(cfg *config.Config) error {
 	fmt.Println("  backup      Backup a repository to tar.gz")
 	fmt.Println("  remove      Remove a repository")
 	fmt.Println("  logs        View server logs")
+	fmt.Println("  doctor      Diagnose and optionally fix config/server issues (--fix)")
 	fmt.Println("  version     Show version")
 	fmt.Println("  help        Show this help message")
 

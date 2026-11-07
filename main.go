@@ -118,6 +118,17 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
+	case "doctor":
+		fix := false
+		for _, a := range os.Args[2:] {
+			if a == "--fix" || a == "-fix" {
+				fix = true
+			}
+		}
+		if err := cmd.Doctor(cfg, fix); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 		os.Exit(1)
