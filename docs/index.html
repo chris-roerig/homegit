@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F9F6EE">
+  <meta name="description" content="homegit is a tiny, self-hosted Git server for your trusted home network. Your code. Your machine. Your rules.">
+  <meta property="og:title" content="homegit — your code, your machine, your rules">
+  <meta property="og:description" content="A minimal personal Git server with embedded SSH. No cloud, no accounts, no complexity.">
+  <meta property="og:type" content="website">
+  <title>homegit — Your code. Your machine. Your rules.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cream:#F9F6EE;--surface:#F1F1EC;--navy:#0D2A4D;--charcoal:#223A5C;
+      --grey:#708294;--muted:#647487;--line:#D8DCD9;--border:#C9D0D4;
+      --code-bg:#0D2A4D;--code-text:#e8edf2;--code-prompt:#8ca4b8;
+      --mono:'DM Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+      --sans:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--sans);background:var(--cream);color:var(--navy);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    button{font:inherit}
+    ::selection{background:#c4d2da;color:var(--navy)}
+    .container{max-width:760px;margin:0 auto;padding:0 24px}
+
+    header{text-align:center;padding:84px 0 40px}
+    .logo{margin:0 auto 26px;width:76px;height:auto;color:var(--navy)}
+    .logo svg{width:100%;height:auto;display:block}
+    h1{font-family:var(--sans);font-size:44px;font-weight:300;letter-spacing:-.06em;margin-bottom:14px;line-height:1.1}
+    h1 .muted{color:var(--grey)}
+    .tagline{font-size:16px;color:var(--muted);font-weight:300;margin:0 auto;max-width:440px}
+
+    .install-section{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:26px;margin-bottom:22px}
+    .install-section h2{font-family:var(--mono);font-size:12px;font-weight:500;margin-bottom:14px;color:var(--grey);text-transform:uppercase;letter-spacing:.14em}
+    .install-command{background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:15px 17px;color:var(--code-text);font-family:var(--mono);font-size:13px;word-break:break-all;cursor:pointer;position:relative;transition:border-color .2s}
+    .install-command:hover{border-color:var(--charcoal)}
+    .install-command .prompt{color:var(--code-prompt);user-select:none}
+    .install-command .copy-hint{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--code-prompt);font-size:11px;background:var(--code-bg);padding-left:10px}
+    .install-note{margin-top:11px;font-size:12.5px;color:var(--muted);font-weight:300}
+    .install-note code{font-family:var(--mono);font-size:.9em;background:var(--cream);border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+    .install-alt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:46px}
+    .pill{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:8px 15px;font-family:var(--mono);font-size:12.5px;color:var(--charcoal)}
+    .pill.ghost{color:var(--grey);border-style:dashed}
+
+    .separator{border:0;border-top:1px solid var(--line);margin:0 0 46px}
+
+    .section-label{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--grey);text-transform:uppercase;letter-spacing:.14em;margin-bottom:18px}
+
+    .features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:46px}
+    .feature{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:22px}
+    .feature h3{font-size:15px;font-weight:500;letter-spacing:-.02em;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+    .feature h3 .dot{font-family:var(--mono);color:var(--grey);font-size:13px}
+    .feature p{font-size:13px;color:var(--muted);font-weight:300;line-height:1.65}
+    .feature code{font-family:var(--mono);font-size:.9em;background:var(--cream);border:1px solid var(--line);border-radius:3px;padding:1px 5px;color:var(--charcoal)}
+
+    .example{margin-bottom:46px}
+    .example h2{font-family:var(--mono);font-size:12px;font-weight:500;margin-bottom:8px;color:var(--grey);text-transform:uppercase;letter-spacing:.14em}
+    .example > p{font-size:13.5px;color:var(--muted);font-weight:300;margin-bottom:16px}
+    .example pre{background:var(--code-bg);border:1px solid var(--border);border-radius:5px;padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;color:var(--code-text);margin-bottom:14px;scrollbar-width:thin}
+    .example pre .prompt{color:var(--code-prompt);user-select:none}
+    .example pre .output{color:var(--code-prompt)}
+    .example pre .comment{color:var(--code-prompt)}
+
+    .safety{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:20px 22px;margin-bottom:46px;color:var(--muted)}
+    .safety svg{flex:0 0 22px;color:var(--navy);margin-top:1px}
+    .safety p{margin:0;font-size:12.5px;line-height:1.7;font-weight:300}
+    .safety strong{color:var(--navy);font-weight:500}
+
+    footer{text-align:center;padding:34px 0 52px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+    footer a{color:var(--charcoal);text-decoration:none}
+    footer a:hover{text-decoration:underline}
+    :focus-visible{outline:2px solid #6485a6;outline-offset:3px}
+
+    @media(max-width:600px){
+      header{padding:52px 0 26px}
+      h1{font-size:34px}
+      .features{grid-template-columns:1fr}
+      .install-command{font-size:11.5px}
+      .install-command .copy-hint{display:none}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg role="img" aria-label="homegit — a house outline with a Git branch" viewBox="0 0 120 130">
+          <path d="M17 111V48L60 12L103 48V111" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M60 66V101M60 101L85 80" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="60" cy="65" r="7" fill="var(--cream)" stroke="currentColor" stroke-width="4.6"/>
+          <circle cx="60" cy="101" r="7" fill="var(--cream)" stroke="currentColor" stroke-width="4.6"/>
+          <circle cx="85" cy="80" r="7" fill="var(--cream)" stroke="currentColor" stroke-width="4.6"/>
+        </svg>
+      </div>
+      <h1>Your code. Your machine. <span class="muted">Your rules.</span></h1>
+      <p class="tagline">A tiny, self-hosted Git server for your trusted home network. No cloud, no accounts, no complexity.</p>
+    </header>
+
+    <div class="install-section">
+      <h2>Install homegit</h2>
+      <div class="install-command" id="install-cmd" role="button" tabindex="0" aria-label="Copy install command">
+        <span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/chris-roerig/homegit/main/install.sh | sh
+        <span class="copy-hint" id="copy-hint">click to copy</span>
+      </div>
+      <p class="install-note">Paste that in a macOS Terminal or Linux shell. Prefer <a href="https://brew.sh" style="text-decoration:underline">Homebrew</a>? Run <code>brew install chris-roerig/homegit/homegit</code>. Then <code>homegit setup</code>.</p>
+    </div>
+
+    <div class="install-alt">
+      <div class="pill">homegit init</div>
+      <div class="pill">homegit start</div>
+      <div class="pill">homegit clone</div>
+      <div class="pill">homegit list</div>
+      <div class="pill">homegit backup</div>
+      <div class="pill">homegit doctor</div>
+      <div class="pill ghost">and more…</div>
+    </div>
+
+    <hr class="separator">
+
+    <div class="features">
+      <div class="feature">
+        <h3><span class="dot">01</span> Stay local.</h3>
+        <p>Keep your side projects on your own machine. Work offline and share across computers on your trusted network.</p>
+      </div>
+      <div class="feature">
+        <h3><span class="dot">02</span> Keep it simple.</h3>
+        <p>A single binary with an embedded SSH server. No separate database, accounts, or web dashboard to maintain.</p>
+      </div>
+      <div class="feature">
+        <h3><span class="dot">03</span> Just use Git.</h3>
+        <p>Initialize, push, and clone with familiar commands. Repositories are created automatically on first push.</p>
+      </div>
+      <div class="feature">
+        <h3><span class="dot">04</span> Update in place.</h3>
+        <p>Installed via the shell script? Run <code>homegit update</code>. Installed via Homebrew? Use <code>brew upgrade</code>.</p>
+      </div>
+    </div>
+
+    <hr class="separator">
+
+    <div class="example">
+      <h2>Single computer</h2>
+      <p>Host repositories on the machine you're using. During setup, choose &ldquo;store repos on this computer.&rdquo;</p>
+      <pre><span class="prompt">$ </span>homegit setup            <span class="comment"># choose: on this computer</span>
+<span class="prompt">$ </span>homegit start            <span class="output"># homegit 1.3.0: server started</span>
+
+<span class="prompt">$ </span>cd my-project
+<span class="prompt">$ </span>homegit init
+<span class="prompt">$ </span>git add . &amp;&amp; git commit -m "Initial commit"
+<span class="prompt">$ </span>git push -u origin main</pre>
+    </div>
+
+    <div class="example">
+      <h2>Connect to another computer</h2>
+      <p>Point this machine at another computer that acts as the server. Set up the server first, then connect as a client.</p>
+      <pre><span class="comment"># on the SERVER machine</span>
+<span class="prompt">$ </span>homegit setup            <span class="comment"># choose: on this computer</span>
+<span class="prompt">$ </span>homegit start
+
+<span class="comment"># on THIS (client) machine</span>
+<span class="prompt">$ </span>homegit setup            <span class="comment"># choose: on another computer → 10.0.0.142</span>
+<span class="prompt">$ </span>homegit list             <span class="output"># repos on 10.0.0.142</span>
+<span class="prompt">$ </span>homegit clone</pre>
+    </div>
+
+    <aside class="safety">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3 3 7v5c0 5.2 3.5 8.8 9 10 5.5-1.2 9-4.8 9-10V7l-9-4Z"/><path d="M12 8v5m0 3v.5" stroke-linecap="round"/></svg>
+      <p><strong>Built for trusted networks, not the public internet.</strong> homegit does not authenticate users: anyone who can reach its server can push and pull. Keep it on localhost or a private trusted network, and use firewall rules or a VPN as appropriate. Run <code style="font-family:var(--mono);background:var(--cream);border:1px solid var(--line);border-radius:3px;padding:1px 5px">homegit doctor</code> anytime to check configuration and connectivity.</p>
+    </aside>
+
+    <footer>
+      <p>
+        <a href="https://github.com/chris-roerig/homegit">GitHub</a> &middot;
+        <a href="https://github.com/chris-roerig/homegit/issues">Issues</a> &middot;
+        <a href="https://github.com/chris-roerig/homegit/blob/main/LICENSE">MIT License</a>
+      </p>
+      <p style="margin-top:10px;color:var(--grey)">Small by design. Yours by default.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var cmd='curl -fsSL https://raw.githubusercontent.com/chris-roerig/homegit/main/install.sh | sh';
+      var box=document.getElementById('install-cmd');
+      var hint=document.getElementById('copy-hint');
+      function copy(){
+        var done=function(){hint.textContent='copied!';setTimeout(function(){hint.textContent='click to copy';},2000);};
+        if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(cmd).then(done).catch(function(){});}
+        else{var t=document.createElement('textarea');t.value=cmd;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(e){}t.remove();}
+      }
+      box.addEventListener('click',copy);
+      box.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();copy();}});
+    })();
+  </script>
+</body>
+</html>
