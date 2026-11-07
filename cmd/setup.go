@@ -56,10 +56,14 @@ func Setup() error {
 			return fmt.Errorf("hostname/IP is required")
 		}
 
-		// Basic validation - no spaces, not localhost variants
-		if strings.Contains(serverHost, " ") {
-			return fmt.Errorf("invalid hostname/IP: cannot contain spaces")
+		// Normalize and validate (strips http://, ssh://, trailing dots,
+		// rejects spaces) so we store a clean SSH-usable host.
+		normalized, err := config.NormalizeServerHost(serverHost)
+		if err != nil {
+			return fmt.Errorf("invalid hostname/IP: %w", err)
 		}
+		serverHost = normalized
+
 		if serverHost == "localhost" || serverHost == "127.0.0.1" {
 			return fmt.Errorf("use option 1 to store repos on this computer")
 		}

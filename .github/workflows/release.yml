@@ -26,7 +26,13 @@ jobs:
 
     - name: Get version
       id: version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      run: |
+        # Full tag (e.g. v1.0.5) for release assets and Homebrew.
+        TAG=${GITHUB_REF#refs/tags/}
+        echo "TAG=${TAG}" >> $GITHUB_OUTPUT
+        # Version without the leading "v" so it matches cmd.Version and what
+        # `homegit version` reports (e.g. 1.0.5).
+        echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
 
     - name: Build binaries
       run: |
@@ -67,10 +73,10 @@ jobs:
 
     - name: Update Homebrew tap
       run: |
-        VERSION=${{ steps.version.outputs.VERSION }}
+        TAG=${{ steps.version.outputs.TAG }}
         echo "Calculating SHA256 for Homebrew formula..."
         sleep 5  # Wait for release tarball to be available
-        SHA=$(curl -sL https://github.com/chris-roerig/homegit/archive/refs/tags/${VERSION}.tar.gz | shasum -a 256 | cut -d' ' -f1)
+        SHA=$(curl -sL https://github.com/chris-roerig/homegit/archive/refs/tags/${TAG}.tar.gz | shasum -a 256 | cut -d' ' -f1)
         echo "SHA256: $SHA"
         
         # Clone homebrew tap
@@ -78,14 +84,14 @@ jobs:
         cd tap
         
         # Update formula
-        sed -i "s|archive/refs/tags/v[0-9.]*\.tar\.gz|archive/refs/tags/${VERSION}.tar.gz|g" Formula/homegit.rb
+        sed -i "s|archive/refs/tags/v[0-9.]*\.tar\.gz|archive/refs/tags/${TAG}.tar.gz|g" Formula/homegit.rb
         sed -i "s/sha256 \"[a-f0-9]*\"/sha256 \"$SHA\"/g" Formula/homegit.rb
         
         # Commit and push
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add Formula/homegit.rb
-        git commit -m "Update homegit to ${VERSION}" || exit 0
+        git commit -m "Update homegit to ${TAG}" || exit 0
         git push https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/chris-roerig/homebrew-homegit.git main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

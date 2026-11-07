@@ -27,6 +27,7 @@ go.work
 
 # OS
 .DS_Store
+._*
 Thumbs.db
 
 # Local test data

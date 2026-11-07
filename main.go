@@ -8,7 +8,13 @@ import (
 	"github.com/chris-roerig/homegit/internal/config"
 )
 
+// version is injected at build time via -ldflags "-X main.version=<tag>".
+// When empty (local/dev builds) the compiled-in default in cmd.Version is used.
+var version string
+
 func main() {
+	cmd.SetVersion(version)
+
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-v" || os.Args[1] == "version") {
 		cmd.ShowVersion()
 		os.Exit(0)
