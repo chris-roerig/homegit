@@ -10,8 +10,8 @@ import (
 )
 
 func List(cfg *config.Config) error {
-	// If the server is this machine, read local directory
-	if isLocalServer(cfg) {
+	// If operating against the local server, read the local directory.
+	if !cfg.IsRemoteClient() {
 		return listLocal(cfg)
 	}
 
@@ -20,11 +20,11 @@ func List(cfg *config.Config) error {
 }
 
 func listLocal(cfg *config.Config) error {
-	if err := os.MkdirAll(cfg.ReposDir, 0755); err != nil {
+	if err := os.MkdirAll(cfg.Server.ReposDir, 0755); err != nil {
 		return fmt.Errorf("failed to create repos directory: %w", err)
 	}
 
-	entries, err := os.ReadDir(cfg.ReposDir)
+	entries, err := os.ReadDir(cfg.Server.ReposDir)
 	if err != nil {
 		return fmt.Errorf("failed to read repos directory: %w", err)
 	}
@@ -41,9 +41,9 @@ func listLocal(cfg *config.Config) error {
 		return nil
 	}
 
-	fmt.Printf("Repositories in %s:\n", cfg.ReposDir)
+	fmt.Printf("Repositories in %s:\n", cfg.Server.ReposDir)
 	for _, repo := range repos {
-		fullPath := filepath.Join(cfg.ReposDir, repo)
+		fullPath := filepath.Join(cfg.Server.ReposDir, repo)
 		fmt.Printf("  %s\n    Path: %s\n", repo, fullPath)
 	}
 
@@ -61,7 +61,7 @@ func listRemote(cfg *config.Config) error {
 		return nil
 	}
 
-	fmt.Printf("Repositories on %s:\n", cfg.ServerHost)
+	fmt.Printf("Repositories on %s:\n", cfg.ClientHost())
 	for _, repo := range repos {
 		fmt.Printf("  %s\n", repo)
 	}

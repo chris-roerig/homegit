@@ -38,7 +38,7 @@ func Init() error {
 	}
 
 	// Add remote
-	remoteURL := fmt.Sprintf("ssh://%s:%d/%s.git", cfg.ServerHost, cfg.Port, repoName)
+	remoteURL := fmt.Sprintf("ssh://%s:%d/%s.git", cfg.ClientHost(), cfg.ClientPort(), repoName)
 	cmd := exec.Command("git", "remote", "add", "origin", remoteURL)
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -63,10 +63,10 @@ func Init() error {
 
 	// Check if server is reachable
 	fmt.Println("\nChecking homegit server...")
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", cfg.ServerHost, cfg.Port), 2*time.Second)
+	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", cfg.ClientHost(), cfg.ClientPort()), 2*time.Second)
 	if err != nil {
 		fmt.Println("⚠ Server not reachable. Start it with:")
-		fmt.Printf("  homegit start    # Run on your homegit server (%s)\n", cfg.ServerHost)
+		fmt.Printf("  homegit start    # Run on your homegit server (%s)\n", cfg.ClientHost())
 	} else {
 		if err := conn.Close(); err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: failed to close connection: %v\n", err)

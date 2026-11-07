@@ -42,7 +42,8 @@ func Setup() error {
 		hostname, _ := os.Hostname()
 		fmt.Printf("\n✓ Repos will be stored on this computer\n")
 		fmt.Printf("✓ Other computers can connect using: %s\n", hostname)
-		cfg.ServerHost = "localhost"
+		// Local server: leave the client host empty so commands operate locally.
+		cfg.Client.Host = ""
 	} else {
 		// This is a client
 		fmt.Print("\nEnter the computer's hostname or IP where repos are stored: ")
@@ -68,7 +69,7 @@ func Setup() error {
 			return fmt.Errorf("use option 1 to store repos on this computer")
 		}
 
-		cfg.ServerHost = serverHost
+		cfg.Client.Host = serverHost
 		fmt.Printf("\n✓ Will connect to: %s\n", serverHost)
 	}
 
@@ -79,7 +80,7 @@ func Setup() error {
 
 	fmt.Println("\n✓ Configuration saved to ~/.homegit/config")
 
-	if cfg.ServerHost == "localhost" {
+	if !cfg.IsRemoteClient() {
 		// This is the server - ask if they want to start it
 		fmt.Print("\nStart homegit now? (Y/n): ")
 		response, err := reader.ReadString('\n')
@@ -101,7 +102,7 @@ func Setup() error {
 		}
 	} else {
 		fmt.Println("\nNext steps:")
-		fmt.Printf("  1. Make sure homegit is running on %s\n", cfg.ServerHost)
+		fmt.Printf("  1. Make sure homegit is running on %s\n", cfg.ClientHost())
 		fmt.Println("  2. Initialize a repo: homegit init")
 	}
 

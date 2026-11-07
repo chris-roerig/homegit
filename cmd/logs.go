@@ -11,7 +11,7 @@ import (
 )
 
 func Logs(cfg *config.Config, args []string) error {
-	logFile := filepath.Join(filepath.Dir(cfg.PIDFile), "server.log")
+	logFile := filepath.Join(filepath.Dir(cfg.Server.PIDFile), "server.log")
 
 	if _, err := os.Stat(logFile); os.IsNotExist(err) {
 		return fmt.Errorf("no log file found at %s", logFile)

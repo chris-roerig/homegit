@@ -8,7 +8,7 @@ import (
 // development builds, but release builds override it via -ldflags
 // "-X main.version=..." which is propagated here through SetVersion from
 // package main. Keep this in sync with the latest released tag.
-var Version = "1.0.5"
+var Version = "1.1.0"
 
 // SetVersion overrides the reported version. It is called from package main
 // when a version string has been injected at build time via ldflags. An empty

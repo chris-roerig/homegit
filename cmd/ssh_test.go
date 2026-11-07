@@ -9,7 +9,9 @@ import (
 )
 
 func TestClassifySSHError(t *testing.T) {
-	cfg := &config.Config{ServerHost: "10.0.0.142", Port: 2222}
+	cfg := &config.Config{}
+	cfg.Client.Host = "10.0.0.142"
+	cfg.Client.Port = 2222
 	runErr := errors.New("exit status 255")
 
 	tests := []struct {

@@ -21,7 +21,7 @@ func Backup(cfg *config.Config, repoName string) error {
 		repoName = repoName + ".git"
 	}
 
-	repoPath := filepath.Join(cfg.ReposDir, repoName)
+	repoPath := filepath.Join(cfg.Server.ReposDir, repoName)
 	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
 		return fmt.Errorf("repository not found: %s", repoName)
 	}
@@ -30,7 +30,7 @@ func Backup(cfg *config.Config, repoName string) error {
 }
 
 func backupInteractive(cfg *config.Config) error {
-	entries, err := os.ReadDir(cfg.ReposDir)
+	entries, err := os.ReadDir(cfg.Server.ReposDir)
 	if err != nil {
 		return fmt.Errorf("failed to read repos directory: %w", err)
 	}
@@ -67,7 +67,7 @@ func backupInteractive(cfg *config.Config) error {
 	}
 
 	selectedRepo := repos[choice-1]
-	repoPath := filepath.Join(cfg.ReposDir, selectedRepo)
+	repoPath := filepath.Join(cfg.Server.ReposDir, selectedRepo)
 
 	return createBackup(cfg, selectedRepo, repoPath)
 }
@@ -86,7 +86,7 @@ func createBackup(cfg *config.Config, repoName, repoPath string) error {
 	fmt.Printf("Creating backup of '%s'...\n", repoName)
 
 	// Create tar.gz archive
-	cmd := exec.Command("tar", "-czf", backupFile, "-C", cfg.ReposDir, repoName)
+	cmd := exec.Command("tar", "-czf", backupFile, "-C", cfg.Server.ReposDir, repoName)
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to create backup: %w", err)
 	}

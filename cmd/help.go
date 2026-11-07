@@ -31,8 +31,8 @@ func Help(cfg *config.Config) error {
 	fmt.Println("  help        Show this help message")
 
 	fmt.Println("\n=== SERVER INFO ===")
-	fmt.Printf("  Port:        %d\n", cfg.Port)
-	fmt.Printf("  Repos Dir:   %s\n", cfg.ReposDir)
+	fmt.Printf("  Port:        %d\n", cfg.Server.Port)
+	fmt.Printf("  Repos Dir:   %s\n", cfg.Server.ReposDir)
 	fmt.Printf("  Hostname:    %s\n", hostname)
 	fmt.Printf("  Local IP:    %s\n", ip)
 
@@ -42,20 +42,20 @@ func Help(cfg *config.Config) error {
 	fmt.Println("   git init")
 	fmt.Println("   git add .")
 	fmt.Println("   git commit -m \"Initial commit\"")
-	fmt.Printf("   git remote add origin ssh://localhost:%d/my-project.git\n", cfg.Port)
+	fmt.Printf("   git remote add origin ssh://localhost:%d/my-project.git\n", cfg.Server.Port)
 	fmt.Println("   git push -u origin main")
 
 	fmt.Println("\n2. Clone from this computer:")
-	fmt.Printf("   git clone ssh://localhost:%d/my-project.git\n", cfg.Port)
+	fmt.Printf("   git clone ssh://localhost:%d/my-project.git\n", cfg.Server.Port)
 	fmt.Println("   # Or use the shortcut:")
 	fmt.Println("   homegit clone my-project")
 
 	fmt.Println("\n3. Clone from another computer on your network:")
-	fmt.Printf("   git clone ssh://%s:%d/my-project.git\n", ip, cfg.Port)
+	fmt.Printf("   git clone ssh://%s:%d/my-project.git\n", ip, cfg.Server.Port)
 
 	fmt.Println("\n4. Add remote from another computer:")
 	fmt.Println("   cd existing-project")
-	fmt.Printf("   git remote add origin ssh://%s:%d/my-project.git\n", ip, cfg.Port)
+	fmt.Printf("   git remote add origin ssh://%s:%d/my-project.git\n", ip, cfg.Server.Port)
 	fmt.Println("   git push -u origin main")
 
 	fmt.Println("\n=== NOTES ===")
