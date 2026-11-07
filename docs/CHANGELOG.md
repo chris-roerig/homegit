@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-11-07
+
+### Added
+- Daemon commands (`start`, `stop`, `restart`, `status`, `serve`) now include the
+  version in their output, e.g. `homegit 1.2.0: server started`.
+- `homegit doctor` command: diagnoses common configuration and server issues
+  (malformed client host, missing repos/backup directories, missing host key,
+  stale PID file, server reachability) and reports them. Run with `--fix` to
+  apply safe repairs (create missing directories, remove a stale PID file,
+  normalize the client host).
+
+### Changed
+- Repository names derived from the current folder during `homegit init` are now
+  normalized: lowercased, with whitespace/hyphens/dots collapsed to single
+  underscores and other characters stripped (e.g. `Foo Bar` becomes
+  `foo_bar.git`). Existing repositories are unaffected.
+
+[1.2.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.2.0
+
 ## [1.1.0] - 2026-11-07
 
 ### Changed

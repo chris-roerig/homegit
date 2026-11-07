@@ -67,6 +67,7 @@ homegit clone      # Clone from server (interactive if no name given)
 homegit backup     # Backup repository
 homegit remove     # Remove repository
 homegit logs       # View server logs
+homegit doctor     # Diagnose and optionally fix issues (--fix)
 homegit version    # Show version
 homegit help       # Show help
 ```

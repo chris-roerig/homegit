@@ -25,3 +25,8 @@ func Status(cfg *config.Config) error {
 func IsRunning(cfg *config.Config) bool {
 	return false
 }
+
+// PID returns 0 on Windows, where daemon mode is unsupported.
+func PID(cfg *config.Config) int {
+	return 0
+}

@@ -85,6 +85,15 @@ func Status(cfg *config.Config) error {
 	return nil
 }
 
+// PID returns the recorded server PID, or 0 if it cannot be read.
+func PID(cfg *config.Config) int {
+	pid, err := readPID(cfg.Server.PIDFile)
+	if err != nil {
+		return 0
+	}
+	return pid
+}
+
 func IsRunning(cfg *config.Config) bool {
 	pid, err := readPID(cfg.Server.PIDFile)
 	if err != nil {
