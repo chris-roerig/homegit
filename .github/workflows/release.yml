@@ -71,27 +71,55 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Update Homebrew tap
+  homebrew:
+    name: Update Homebrew tap
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get version
+      id: version
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}
+        echo "TAG=${TAG}" >> $GITHUB_OUTPUT
+
+    - name: Verify tap token is configured
+      env:
+        HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      run: |
+        if [ -z "${HOMEBREW_TAP_TOKEN}" ]; then
+          echo "::error::HOMEBREW_TAP_TOKEN secret is not set. The GitHub release"
+          echo "::error::was published successfully, but the Homebrew tap was not"
+          echo "::error::updated. Add a token with write access to"
+          echo "::error::chris-roerig/homebrew-homegit, then re-run this job:"
+          echo "::error::  gh run rerun <run-id> --failed"
+          exit 1
+        fi
+
+    - name: Update formula
+      env:
+        HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
       run: |
         TAG=${{ steps.version.outputs.TAG }}
         echo "Calculating SHA256 for Homebrew formula..."
         sleep 5  # Wait for release tarball to be available
         SHA=$(curl -sL https://github.com/chris-roerig/homegit/archive/refs/tags/${TAG}.tar.gz | shasum -a 256 | cut -d' ' -f1)
         echo "SHA256: $SHA"
-        
-        # Clone homebrew tap
-        git clone https://github.com/chris-roerig/homebrew-homegit.git tap
+
+        # Clone homebrew tap using the token so the push is authenticated.
+        git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/chris-roerig/homebrew-homegit.git tap
         cd tap
-        
+
         # Update formula
         sed -i "s|archive/refs/tags/v[0-9.]*\.tar\.gz|archive/refs/tags/${TAG}.tar.gz|g" Formula/homegit.rb
         sed -i "s/sha256 \"[a-f0-9]*\"/sha256 \"$SHA\"/g" Formula/homegit.rb
-        
-        # Commit and push
+
+        # Commit and push (no-op exit if nothing changed)
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add Formula/homegit.rb
-        git commit -m "Update homegit to ${TAG}" || exit 0
-        git push https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/chris-roerig/homebrew-homegit.git main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if git diff --cached --quiet; then
+          echo "Formula already up to date for ${TAG}; nothing to push."
+          exit 0
+        fi
+        git commit -m "Update homegit to ${TAG}"
+        git push origin main
