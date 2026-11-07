@@ -3,17 +3,15 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/chris-roerig/homegit/internal/config"
 )
 
 func List(cfg *config.Config) error {
-	// If server_host is localhost, read local directory
-	if cfg.ServerHost == "localhost" || cfg.ServerHost == "127.0.0.1" {
+	// If the server is this machine, read local directory
+	if isLocalServer(cfg) {
 		return listLocal(cfg)
 	}
 
@@ -53,20 +51,9 @@ func listLocal(cfg *config.Config) error {
 }
 
 func listRemote(cfg *config.Config) error {
-	// Use SSH to list repos on remote server
-	cmd := exec.Command("ssh", "-p", strconv.Itoa(cfg.Port), cfg.ServerHost, "ls", "-1", cfg.ReposDir)
-	output, err := cmd.Output()
+	repos, err := remoteRepoList(cfg)
 	if err != nil {
-		return fmt.Errorf("failed to list remote repos: %w", err)
-	}
-
-	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
-	repos := []string{}
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line != "" && strings.HasSuffix(line, ".git") {
-			repos = append(repos, line)
-		}
+		return err
 	}
 
 	if len(repos) == 0 {

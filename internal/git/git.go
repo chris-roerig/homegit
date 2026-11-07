@@ -15,12 +15,26 @@ var (
 )
 
 type Command struct {
-	Type     string // "upload-pack" or "receive-pack"
+	Type     string // "upload-pack", "receive-pack", or "list"
 	RepoPath string
 }
 
+// ListCommand is the SSH command clients send to request a repository
+// listing from the server. It is read-only and takes no arguments, so the
+// server uses its own configured repos directory as the authoritative source.
+const ListCommand = "homegit-list-packs"
+
 func ParseCommand(cmdStr string) (*Command, error) {
 	parts := strings.Fields(cmdStr)
+	if len(parts) == 0 {
+		return nil, fmt.Errorf("empty command")
+	}
+
+	// The list command takes no arguments.
+	if parts[0] == ListCommand {
+		return &Command{Type: "list"}, nil
+	}
+
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("invalid git command: %s", cmdStr)
 	}
@@ -40,6 +54,12 @@ func ParseCommand(cmdStr string) (*Command, error) {
 }
 
 func (c *Command) Execute(reposDir string, stdin io.Reader, stdout, stderr io.Writer) error {
+	// The list command is read-only and takes no repository path; it lists
+	// the bare repositories in the server's configured repos directory.
+	if c.Type == "list" {
+		return listRepos(reposDir, stdout)
+	}
+
 	// Clean and validate repository path to prevent directory traversal
 	// Remove leading slash if present (Git sends paths like /repo.git)
 	repoPath := strings.TrimPrefix(c.RepoPath, "/")
@@ -84,6 +104,30 @@ func (c *Command) Execute(reposDir string, stdin io.Reader, stdout, stderr io.Wr
 	cmd.Stderr = stderr
 
 	return cmd.Run()
+}
+
+// listRepos writes the names of all bare repositories (directories ending in
+// ".git") in reposDir to w, one per line. The listing is derived entirely from
+// the server's own directory, so no client-supplied path is involved.
+func listRepos(reposDir string, w io.Writer) error {
+	entries, err := os.ReadDir(reposDir)
+	if err != nil {
+		// A missing repos directory simply means no repositories yet.
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("failed to read repos directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasSuffix(entry.Name(), ".git") {
+			if _, err := fmt.Fprintln(w, entry.Name()); err != nil {
+				return fmt.Errorf("failed to write repository list: %w", err)
+			}
+		}
+	}
+
+	return nil
 }
 
 func ensureRepo(path string) error {
