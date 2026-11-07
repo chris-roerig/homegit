@@ -214,10 +214,6 @@ A: Yes! Add both remotes and push to each.
 **Q: Need more features?**  
 A: Check out Gitea (full GitHub alternative) or GitLab (enterprise-grade).
 
-## Contributing
-
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md)
-
 ## License
 
 MIT - See [LICENSE](LICENSE)
