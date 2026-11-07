@@ -17,6 +17,21 @@ brew install chris-roerig/homegit/homegit
 homegit setup
 ```
 
+**Or install with the shell script (macOS/Linux)**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chris-roerig/homegit/main/install.sh | sh
+homegit setup
+```
+
+Prefer to inspect first? Download it, read it, then run it:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chris-roerig/homegit/main/install.sh -o install.sh
+less install.sh
+sh install.sh
+```
+
 **Or clone this repo and run**
 
 ```bash
@@ -68,6 +83,7 @@ homegit backup     # Backup repository
 homegit remove     # Remove repository
 homegit logs       # View server logs
 homegit doctor     # Diagnose and optionally fix issues (--fix)
+homegit update     # Update homegit to the latest release
 homegit version    # Show version
 homegit help       # Show help
 ```

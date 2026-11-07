@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-11-07
+
+### Added
+- **Shell install script** (`install.sh`): install homegit with a single command
+  (`curl -fsSL .../install.sh | sh`). Detects OS/architecture, downloads the
+  matching release binary, verifies it against the published checksums, and
+  installs to `/usr/local/bin` or `~/.local/bin`.
+- **`homegit update`**: updates a standalone installation to the latest release
+  in place (with checksum verification and an atomic replace). When homegit was
+  installed via Homebrew, it does not self-overwrite and instead directs you to
+  `brew upgrade homegit`.
+
+[1.3.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.3.0
+
 ## [1.2.0] - 2026-11-07
 
 ### Added
