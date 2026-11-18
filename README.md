@@ -101,7 +101,10 @@ Edit with `homegit config` or directly at `~/.homegit/config`:
     "port": 2222,
     "repos_dir": "/Users/you/.homegit/repos",
     "host_key": "/Users/you/.homegit/host_key",
-    "pid_file": "/Users/you/.homegit/homegit.pid"
+    "pid_file": "/Users/you/.homegit/homegit.pid",
+    "web_port": 8222,
+    "web_enabled": true,
+    "allowed_ips": []
   },
   "client": {
     "host": "",
@@ -113,12 +116,21 @@ Edit with `homegit config` or directly at `~/.homegit/config`:
 Config is organized by role:
 
 - **Top level** - shared settings: `default_branch` (default branch for new repos), `backup_dir`, and `name` (identifies this device; reserved for future use).
-- **`server`** - used when this machine *hosts* repos (`serve`/`start`/`stop`/`status`): `port` to listen on, `repos_dir`, `host_key`, `pid_file`.
+- **`server`** - used when this machine *hosts* repos (`serve`/`start`/`stop`/`status`): `port` to listen on, `repos_dir`, `host_key`, `pid_file`, `web_port` (web UI port, default 8222), and `web_enabled` (set to `false` to never start the web UI), and `allowed_ips` (see [Security](#security)).
 - **`client`** - used when connecting to *another* homegit server (`list`/`clone`): `host` and `port`. Leave `host` empty to operate against the local server.
 
 > **Upgrading from an older version?** Your existing config is migrated to this
 > format automatically on first run, and the original is saved as
 > `~/.homegit/config.bak`. No manual changes are needed.
+
+## Web UI
+
+`homegit serve` (and `homegit start`) also serve a read-only repo browser at `http://<hostname>:8222`. It has a file tree sidebar, a file viewer, and rendered Markdown (including each directory's README). It shows the default branch (HEAD) only.
+
+- Skip it for one run: `homegit serve --no-web`
+- Turn it off permanently: set `server.web_enabled` to `false` (`homegit setup` asks), or change the port with `server.web_port`.
+- Like the SSH server it has no authentication and listens on all interfaces, so anyone on your network can read your code.
+- Markdown uses a small built-in renderer. Raw HTML in READMEs is limited to a safe set of tags.
 
 ## Auto-start on Boot
 
@@ -150,7 +162,11 @@ brew services list             # List all services
 - Untrusted networks
 - Production code
 
-Run on localhost or private networks only. Use firewall rules or VPN for additional security.
+This includes the web UI (port 8222), which exposes read access to every repo. Run on localhost or private networks only.
+
+**Optionally restrict who can connect.** Set `server.allowed_ips` to a list of IPs or CIDR ranges, for example `["192.168.1.20", "192.168.1.0/24"]`. When the list is non-empty, both the git (SSH) server and the web UI refuse connections from any other address. Loopback (`127.0.0.1`, `::1`) is always allowed so local `homegit` commands keep working. An empty list (the default) allows everyone. Restart the server after editing it, and run `homegit doctor` to validate entries; `serve` refuses to start if an entry is invalid.
+
+This is a network filter, not authentication. It checks the connecting address only, so it does not help behind a proxy or Docker port forwarding (all connections look like they come from the proxy), and it cannot stop a device on your network from spoofing an allowed address. Use firewall rules or VPN for additional security.
 
 ## How It Works
 

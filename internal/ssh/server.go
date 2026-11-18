@@ -14,6 +14,7 @@ import (
 
 	"github.com/chris-roerig/homegit/internal/config"
 	"github.com/chris-roerig/homegit/internal/git"
+	"github.com/chris-roerig/homegit/internal/netacl"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -21,9 +22,14 @@ type Server struct {
 	cfg    *config.Config
 	sshCfg *ssh.ServerConfig
 	wg     sync.WaitGroup
+	acl    *netacl.ACL
 }
 
 func NewServer(cfg *config.Config) (*Server, error) {
+	acl, err := netacl.Parse(cfg.Server.AllowedIPs)
+	if err != nil {
+		return nil, err
+	}
 	hostKey, err := loadOrGenerateHostKey(cfg.Server.HostKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load host key: %w", err)
@@ -34,7 +40,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	}
 	sshCfg.AddHostKey(hostKey)
 
-	return &Server{cfg: cfg, sshCfg: sshCfg}, nil
+	return &Server{cfg: cfg, sshCfg: sshCfg, acl: acl}, nil
 }
 
 func (s *Server) Start() error {
@@ -43,6 +49,7 @@ func (s *Server) Start() error {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 	defer listener.Close()
+	listener = netacl.Wrap(listener, s.acl, "SSH", func(f string, a ...any) { fmt.Printf(f+"\n", a...) })
 
 	fmt.Printf("SSH server listening on port %d\n", s.cfg.Server.Port)
 	fmt.Printf("Repositories: %s\n", s.cfg.Server.ReposDir)

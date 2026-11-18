@@ -10,6 +10,7 @@ import (
 
 	"github.com/chris-roerig/homegit/internal/config"
 	"github.com/chris-roerig/homegit/internal/daemon"
+	"github.com/chris-roerig/homegit/internal/netacl"
 )
 
 // checkStatus is the outcome of a single doctor check.
@@ -145,7 +146,56 @@ func runDoctorChecks(cfg *config.Config) []checkResult {
 	// 6. Reachability of the configured target.
 	results = append(results, reachabilityCheck(cfg))
 
+	// 7. Allowed IPs.
+	results = append(results, allowedIPsCheck(cfg))
+
+	// 8. Web UI.
+	results = append(results, webCheck(cfg))
+
 	return results
+}
+
+// allowedIPsCheck validates server.allowed_ips.
+func allowedIPsCheck(cfg *config.Config) checkResult {
+	const name = "allowed ips"
+	if cfg.IsRemoteClient() {
+		return checkResult{name: name, status: statusOK, message: "not applicable (client-only setup)"}
+	}
+	acl, err := netacl.Parse(cfg.Server.AllowedIPs)
+	if err != nil {
+		return checkResult{name: name, status: statusFail, message: fmt.Sprintf("%v ('serve' will refuse to start until this is fixed)", err)}
+	}
+	if !acl.Active() {
+		return checkResult{name: name, status: statusOK, message: "not restricted (anyone on the network can connect)"}
+	}
+	return checkResult{name: name, status: statusOK, message: fmt.Sprintf("restricted to %d entries (loopback always allowed)", acl.Len())}
+}
+
+// webCheck verifies the web UI port when the local server should be serving it.
+func webCheck(cfg *config.Config) checkResult {
+	const name = "web ui"
+	if cfg.IsRemoteClient() {
+		return checkResult{name: name, status: statusOK, message: "not applicable (client-only setup)"}
+	}
+	if !cfg.Server.WebEnabled {
+		return checkResult{name: name, status: statusOK, message: "disabled (server.web_enabled is false)"}
+	}
+	if cfg.Server.WebPort < 1 || cfg.Server.WebPort > 65535 {
+		return checkResult{name: name, status: statusFail, message: fmt.Sprintf("invalid web_port %d", cfg.Server.WebPort)}
+	}
+	if cfg.Server.WebPort == cfg.Server.Port {
+		return checkResult{name: name, status: statusFail, message: fmt.Sprintf("web_port %d conflicts with the SSH port", cfg.Server.WebPort)}
+	}
+	addr := net.JoinHostPort("localhost", strconv.Itoa(cfg.Server.WebPort))
+	if !daemon.IsRunning(cfg) {
+		return checkResult{name: name, status: statusOK, message: fmt.Sprintf("enabled on port %d (server not running)", cfg.Server.WebPort)}
+	}
+	conn, err := net.DialTimeout("tcp", addr, 3*time.Second)
+	if err != nil {
+		return checkResult{name: name, status: statusWarn, message: fmt.Sprintf("server is running but %s is not accepting connections (port in use or web UI failed to start; see 'homegit logs')", addr)}
+	}
+	_ = conn.Close()
+	return checkResult{name: name, status: statusOK, message: fmt.Sprintf("http://%s is reachable", addr)}
 }
 
 // dirCheck verifies a directory exists, offering to create it.

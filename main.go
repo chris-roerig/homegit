@@ -66,7 +66,13 @@ func main() {
 			os.Exit(1)
 		}
 	case "serve":
-		if err := cmd.Serve(cfg); err != nil {
+		noWeb := false
+		for _, a := range os.Args[2:] {
+			if a == "--no-web" || a == "-no-web" {
+				noWeb = true
+			}
+		}
+		if err := cmd.Serve(cfg, noWeb); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}

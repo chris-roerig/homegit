@@ -73,6 +73,21 @@ func Setup() error {
 		fmt.Printf("\n✓ Will connect to: %s\n", serverHost)
 	}
 
+	if !cfg.IsRemoteClient() {
+		fmt.Printf("\nStart the web repo browser by default (port %d)? (Y/n): ", cfg.Server.WebPort)
+		answer, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("failed to read input: %w", err)
+		}
+		answer = strings.TrimSpace(strings.ToLower(answer))
+		cfg.Server.WebEnabled = answer == "" || answer == "y" || answer == "yes"
+		if cfg.Server.WebEnabled {
+			fmt.Printf("✓ Web UI will be available at http://%s:%d\n", webHostName(), cfg.Server.WebPort)
+		} else {
+			fmt.Println("✓ Web UI disabled (set server.web_enabled in ~/.homegit/config to change)")
+		}
+	}
+
 	// Save config
 	if err := cfg.Save(); err != nil {
 		return fmt.Errorf("failed to save config: %w", err)
@@ -107,4 +122,11 @@ func Setup() error {
 	}
 
 	return nil
+}
+
+func webHostName() string {
+	if h, err := os.Hostname(); err == nil && h != "" {
+		return h
+	}
+	return "localhost"
 }

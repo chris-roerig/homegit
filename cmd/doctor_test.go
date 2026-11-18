@@ -89,3 +89,43 @@ func TestDoctorHealthyLocal(t *testing.T) {
 		}
 	}
 }
+
+func TestDoctorWebCheck(t *testing.T) {
+	cfg := baseCfg(t)
+
+	cfg.Server.WebEnabled = false
+	if r := findResult(runDoctorChecks(cfg), "web ui"); r == nil || r.status != statusOK {
+		t.Fatalf("disabled web ui should be ok, got %+v", r)
+	}
+
+	cfg.Server.WebEnabled = true
+	cfg.Server.WebPort = 0
+	if r := findResult(runDoctorChecks(cfg), "web ui"); r == nil || r.status != statusFail {
+		t.Fatalf("invalid port should fail, got %+v", r)
+	}
+
+	cfg.Server.WebPort = cfg.Server.Port
+	if r := findResult(runDoctorChecks(cfg), "web ui"); r == nil || r.status != statusFail {
+		t.Fatalf("port clashing with ssh should fail, got %+v", r)
+	}
+
+	cfg.Server.WebPort = 8222
+	if r := findResult(runDoctorChecks(cfg), "web ui"); r == nil || r.status != statusOK {
+		t.Fatalf("valid port with server stopped should be ok, got %+v", r)
+	}
+}
+
+func TestDoctorAllowedIPsCheck(t *testing.T) {
+	cfg := baseCfg(t)
+	if r := findResult(runDoctorChecks(cfg), "allowed ips"); r == nil || r.status != statusOK {
+		t.Fatalf("empty list should be ok, got %+v", r)
+	}
+	cfg.Server.AllowedIPs = []string{"192.168.1.0/24", "10.0.0.5"}
+	if r := findResult(runDoctorChecks(cfg), "allowed ips"); r == nil || r.status != statusOK {
+		t.Fatalf("valid list should be ok, got %+v", r)
+	}
+	cfg.Server.AllowedIPs = []string{"192.168.1.0/24", "not-an-ip"}
+	if r := findResult(runDoctorChecks(cfg), "allowed ips"); r == nil || r.status != statusFail {
+		t.Fatalf("invalid entry should fail, got %+v", r)
+	}
+}

@@ -17,7 +17,7 @@ func Help(cfg *config.Config) error {
 	fmt.Println("  setup       Configure homegit (server or client)")
 	fmt.Println("  init        Initialize git repo and add remote")
 	fmt.Println("  config      Edit configuration")
-	fmt.Println("  serve       Start server in foreground")
+	fmt.Println("  serve       Start server in foreground (--no-web skips the web UI)")
 	fmt.Println("  start       Start server as daemon")
 	fmt.Println("  stop        Stop daemon server")
 	fmt.Println("  restart     Restart daemon server")
@@ -35,6 +35,9 @@ func Help(cfg *config.Config) error {
 	fmt.Println("\n=== SERVER INFO ===")
 	fmt.Printf("  Port:        %d\n", cfg.Server.Port)
 	fmt.Printf("  Repos Dir:   %s\n", cfg.Server.ReposDir)
+	if cfg.Server.WebEnabled {
+		fmt.Printf("  Web UI:      http://%s:%d\n", hostname, cfg.Server.WebPort)
+	}
 	fmt.Printf("  Hostname:    %s\n", hostname)
 	fmt.Printf("  Local IP:    %s\n", ip)
 
