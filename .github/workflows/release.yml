@@ -35,6 +35,10 @@ jobs:
         echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
 
     - name: Build binaries
+      env:
+        # Static binaries: without this, the linux/amd64 build links against the
+        # runner's glibc and fails on older distros ("GLIBC_2.34 not found").
+        CGO_ENABLED: "0"
       run: |
         # macOS AMD64
         GOOS=darwin GOARCH=amd64 go build -o homegit-darwin-amd64 -ldflags "-X main.version=${{ steps.version.outputs.VERSION }}"

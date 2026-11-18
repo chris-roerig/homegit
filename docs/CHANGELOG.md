@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-11-18
+
+### Fixed
+- Release binaries are now built with `CGO_ENABLED=0`, so they are statically
+  linked. The v1.3.0/v1.4.0 Linux binaries required a recent glibc and failed
+  on older distributions with `GLIBC_2.34 not found`.
+
+## [1.4.0] - 2026-11-18
+
+### Added
+- **Web repo browser**: `serve` also serves a read-only, GitHub-style file
+  browser with rendered Markdown on port 8222. Configure with
+  `server.web_port` and `server.web_enabled`, skip with `serve --no-web`;
+  `setup` asks whether to enable it and `doctor` checks it.
+- **`server.allowed_ips`**: optional list of IPs/CIDR ranges allowed to connect
+  to both the SSH and web servers. Empty (default) allows everyone; loopback is
+  always allowed.
+
 ## [1.3.0] - 2026-11-07
 
 ### Added
@@ -153,3 +171,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Confirmation prompts for destructive operations
 
 [1.0.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.0.0
+[1.4.1]: https://github.com/chris-roerig/homegit/releases/tag/v1.4.1
+[1.4.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.4.0
