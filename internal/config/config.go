@@ -32,6 +32,14 @@ type ServerConfig struct {
 	ReposDir string `json:"repos_dir"`
 	HostKey  string `json:"host_key"`
 	PIDFile  string `json:"pid_file"`
+	// WebPort is the port for the read-only web repo browser.
+	WebPort int `json:"web_port"`
+	// WebEnabled controls whether 'serve' starts the web repo browser.
+	WebEnabled bool `json:"web_enabled"`
+	// AllowedIPs restricts who may connect to the SSH and web servers. Entries
+	// are IPs or CIDR ranges. Empty (the default) allows everyone. Loopback is
+	// always allowed.
+	AllowedIPs []string `json:"allowed_ips"`
 }
 
 // ClientConfig holds settings used when connecting to a (possibly remote)
@@ -138,6 +146,10 @@ func Default() *Config {
 			ReposDir: filepath.Join(baseDir, "repos"),
 			HostKey:  filepath.Join(baseDir, "host_key"),
 			PIDFile:  filepath.Join(baseDir, "homegit.pid"),
+
+			WebPort:    8222,
+			WebEnabled: true,
+			AllowedIPs: []string{},
 		},
 		Client: ClientConfig{
 			// Empty host => operate against the local server by default.

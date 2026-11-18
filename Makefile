@@ -51,7 +51,7 @@ version: ## Bump version (usage: make version VERSION=v1.0.1)
 	fi
 	@echo "Bumping version to $(VERSION)..."
 	@VERSION_NUM=$$(echo $(VERSION) | sed 's/^v//'); \
-	sed -i.bak "s/const Version = \".*\"/const Version = \"$$VERSION_NUM\"/" cmd/version.go && \
+	sed -i.bak "s/^var Version = \".*\"/var Version = \"$$VERSION_NUM\"/" cmd/version.go && \
 	rm -f cmd/version.go.bak
 	@git add cmd/version.go
 	@git diff --cached --quiet || (git commit -m "Bump version to $(VERSION)" && echo "Version bumped and committed!")

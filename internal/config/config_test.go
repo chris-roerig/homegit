@@ -263,3 +263,13 @@ func TestClientHelpers(t *testing.T) {
 		t.Errorf("ClientHost: got %q", cfg.ClientHost())
 	}
 }
+
+func TestDefaultWebSettings(t *testing.T) {
+	cfg := Default()
+	if !cfg.Server.WebEnabled || cfg.Server.WebPort != 8222 {
+		t.Fatalf("unexpected web defaults: %+v", cfg.Server)
+	}
+	if len(cfg.Server.AllowedIPs) != 0 {
+		t.Fatalf("allowed_ips must default to empty, got %v", cfg.Server.AllowedIPs)
+	}
+}
