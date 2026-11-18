@@ -29,7 +29,7 @@ for platform in "${platforms[@]}"; do
     fi
     
     echo "Building for $GOOS/$GOARCH..."
-    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.version=$VERSION" -o "$OUTPUT_DIR/$output_name"
+    CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.version=$VERSION" -o "$OUTPUT_DIR/$output_name"
 done
 
 # Create checksums
