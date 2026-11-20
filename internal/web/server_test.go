@@ -88,7 +88,7 @@ func TestBrowse(t *testing.T) {
 		{"image view", "/demo/blob/img/logo.png", 200, []string{`<img src="/demo/raw/img/logo.png"`}, nil},
 		{"blob dir redirects", "/demo/blob/src", 302, nil, nil},
 		{"tree file redirects", "/demo/tree/src/main.go", 302, nil, nil},
-		{"empty repo", "/blank/tree/", 200, []string{"Empty repository", "ssh://box.local:2222/blank.git"}, nil},
+		{"empty repo", "/blank/tree/", 200, []string{"This repository is empty", "ssh://box.local:2222/blank.git"}, nil},
 		{"missing repo", "/nope/tree/", 404, nil, nil},
 		{"missing path", "/demo/tree/zzz", 404, nil, nil},
 		{"traversal", "/demo/blob/../../etc/passwd", 400, nil, nil},
