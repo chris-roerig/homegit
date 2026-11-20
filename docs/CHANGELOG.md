@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-11-20
+
+### Added
+- **Project metadata**: an optional `.homegit-meta` JSON file in a repo's root
+  (`description`, `homepage`, `topics`). The web UI shows it in an About
+  sidebar on the repo page and shows the description in the repository list.
+
+### Changed
+- **Web UI redesign**: the layout and light/dark color scheme now follow
+  GitHub (file list with icons, branch and path bar, README box, GitHub-style
+  rendered markdown and code colors).
+
 ## [1.4.1] - 2026-11-18
 
 ### Fixed
@@ -173,3 +185,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.0.0
 [1.4.1]: https://github.com/chris-roerig/homegit/releases/tag/v1.4.1
 [1.4.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.4.0
+[1.5.0]: https://github.com/chris-roerig/homegit/releases/tag/v1.5.0
