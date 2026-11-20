@@ -52,8 +52,10 @@ version: ## Bump version (usage: make version VERSION=v1.0.1)
 	@echo "Bumping version to $(VERSION)..."
 	@VERSION_NUM=$$(echo $(VERSION) | sed 's/^v//'); \
 	sed -i.bak "s/^var Version = \".*\"/var Version = \"$$VERSION_NUM\"/" cmd/version.go && \
-	rm -f cmd/version.go.bak
-	@git add cmd/version.go
+	rm -f cmd/version.go.bak && \
+	sed -i.bak -E "s/(Install the latest version \()[0-9][0-9.]*(\))/\1$$VERSION_NUM\2/" docs/index.html && \
+	rm -f docs/index.html.bak
+	@git add cmd/version.go docs/index.html
 	@git diff --cached --quiet || (git commit -m "Bump version to $(VERSION)" && echo "Version bumped and committed!")
 	@echo "Current version: $$VERSION_NUM"
 
