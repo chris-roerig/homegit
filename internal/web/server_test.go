@@ -53,7 +53,7 @@ func newTestServer(t *testing.T) *Server {
 	}
 	git(t, root, "clone", "-q", "--bare", work, filepath.Join(reposDir, "demo.git"))
 	git(t, root, "init", "-q", "--bare", "-b", "main", filepath.Join(reposDir, "blank.git"))
-	s, err := New(reposDir, 2222)
+	s, err := New(reposDir, 2222, "1.2.3")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,6 +144,21 @@ func TestRawSVGIsNeutralized(t *testing.T) {
 	}
 	if csp := rec.Header().Get("Content-Security-Policy"); !strings.Contains(csp, "sandbox") {
 		t.Errorf("raw responses need a sandbox CSP, got %q", csp)
+	}
+}
+
+func TestHeaderShowsVersion(t *testing.T) {
+	s := newTestServer(t)
+	for _, url := range []string{"/", "/demo/tree/", "/demo/blob/src/main.go", "/nope/tree/", "/blank/tree/"} {
+		body := get(s, url).Body.String()
+		if !strings.Contains(body, `<span class="ver">v1.2.3</span>`) {
+			t.Errorf("%s: header missing version", url)
+		}
+	}
+	for in, want := range map[string]string{"1.5.0": "v1.5.0", "v1.5.0": "v1.5.0", "": "", " 2.0 ": "v2.0"} {
+		if got := displayVersion(in); got != want {
+			t.Errorf("displayVersion(%q) = %q, want %q", in, got, want)
+		}
 	}
 }
 

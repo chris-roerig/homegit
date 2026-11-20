@@ -31,6 +31,7 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 600; }
 .brand:hover { text-decoration: none; }
 .brand svg { width: 28px; height: 30px; }
+.topbar .ver { color: var(--muted); font-size: 12px; font-family: var(--mono); margin-left: -2px; }
 .knob { fill: var(--subtle); }
 .topbar .sep { color: var(--muted); }
 .topbar .reponame { font-weight: 600; }

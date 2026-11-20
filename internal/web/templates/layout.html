@@ -9,7 +9,7 @@
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="/">{{template "logo"}}<span>homegit</span></a>
+  <a class="brand" href="/">{{template "logo"}}<span>homegit</span></a>{{if .Version}}<span class="ver">{{.Version}}</span>{{end}}
   {{if .Repo}}<span class="sep">/</span><a class="reponame" href="/{{.Repo}}/tree/">{{.Repo}}</a>{{end}}
 </header>
 {{if eq .Kind "home"}}{{template "home" .}}
