@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>{{.Title}} · homegit</title>
 <link rel="stylesheet" href="/_static/style.css">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="/">homegit</a>
-  {{if .Repo}}<span class="sep">/</span><a href="/{{.Repo}}/tree/">{{.Repo}}</a>{{if .Branch}}<span class="branch">{{.Branch}}</span>{{end}}{{end}}
+  <a class="brand" href="/">{{template "logo"}}<span>homegit</span></a>
+  {{if .Repo}}<span class="sep">/</span><a class="reponame" href="/{{.Repo}}/tree/">{{.Repo}}</a>{{end}}
 </header>
 {{if eq .Kind "home"}}{{template "home" .}}
 {{else if eq .Kind "error"}}<main class="single">{{template "error" .}}</main>
@@ -17,11 +18,15 @@
 {{else}}
 <div class="layout">
   <nav class="sidebar" aria-label="Files">
+    <p class="sidehead">Files</p>
     <ul class="filetree">{{template "nodes" .Sidebar}}</ul>
-    {{if .Truncate}}<p class="muted">File list truncated.</p>{{end}}
+    {{if .Truncate}}<p class="muted pad">File list truncated.</p>{{end}}
   </nav>
   <main class="content">
-    <div class="crumbs">{{range $i, $c := .Crumbs}}{{if $i}}<span class="sep">/</span>{{end}}<a href="{{$c.URL}}">{{$c.Name}}</a>{{end}}</div>
+    <div class="pathbar">
+      {{if .Branch}}<span class="branchbtn">{{template "icon-branch"}}<span class="branch">{{.Branch}}</span></span>{{end}}
+      <div class="crumbs">{{range $i, $c := .Crumbs}}{{if $i}}<span class="sep">/</span>{{end}}<a href="{{$c.URL}}">{{$c.Name}}</a>{{end}}</div>
+    </div>
     {{if eq .Kind "dir"}}{{template "dir" .}}{{else}}{{template "file" .}}{{end}}
   </main>
 </div>
@@ -29,37 +34,56 @@
 </body>
 </html>{{end}}
 
+{{define "logo"}}<svg role="img" aria-label="homegit" viewBox="0 0 120 130"><path d="M17 111V48L60 12L103 48V111" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 66V101M60 101L85 80" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60" cy="65" r="8" class="knob" stroke="currentColor" stroke-width="7"/><circle cx="60" cy="101" r="8" class="knob" stroke="currentColor" stroke-width="7"/><circle cx="85" cy="80" r="8" class="knob" stroke="currentColor" stroke-width="7"/></svg>{{end}}
+
+{{define "icon-branch"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4.5" cy="3.5" r="1.75"/><circle cx="4.5" cy="12.5" r="1.75"/><circle cx="11.5" cy="5.5" r="1.75"/><path d="M4.5 5.25v5.5M11.5 7.25c0 2-3 2.2-7 3.5"/></svg>{{end}}
+
+{{define "icon-dir"}}<svg class="icon dir" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h3.4c.4 0 .8.2 1.1.5L8 3.5h5.5A1.5 1.5 0 0 1 15 5v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5z"/></svg>{{end}}
+
+{{define "icon-file"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M3.5 1.75h5.6l3.4 3.4v9.1h-9z"/><path d="M9 1.9v3.5h3.4"/></svg>{{end}}
+
 {{define "nodes"}}{{range .}}{{if .IsDir}}<li><details{{if .Open}} open{{end}}><summary><a href="{{.URL}}"{{if .Active}} class="active"{{end}}>{{.Name}}</a></summary><ul>{{template "nodes" .Children}}</ul></details></li>
 {{else}}<li class="file"><a href="{{.URL}}"{{if .Active}} class="active"{{end}}>{{.Name}}</a></li>
 {{end}}{{end}}{{end}}
 
 {{define "home"}}<main class="single">
-  <h1>Repositories</h1>
-  {{if .Repos}}<ul class="repolist">{{range .Repos}}<li><a href="/{{.}}/tree/">{{.}}</a></li>{{end}}</ul>
-  {{else}}<p class="muted">No repositories yet. Create one with <code>homegit init</code>.</p>{{end}}
+  <div class="pagehead"><h1>Repositories</h1><span class="counter">{{len .Repos}}</span></div>
+  {{if .Repos}}<ul class="repolist">{{range .Repos}}<li><a class="repolink" href="/{{.Name}}/tree/">{{.Name}}</a>{{if .Description}}<p class="desc">{{.Description}}</p>{{end}}<code class="cloneurl">{{.CloneURL}}</code></li>{{end}}</ul>
+  {{else}}<div class="blankslate"><p>No repositories yet.</p><p class="muted">Create one with <code>homegit init</code>.</p></div>{{end}}
 </main>{{end}}
 
-{{define "error"}}<h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/">Back to repositories</a></p>{{end}}
+{{define "error"}}<div class="error"><h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/">Back to repositories</a></p></div>{{end}}
 
-{{define "empty"}}<h1>{{.Repo}}</h1>
-<p class="muted">This repository is empty. Push a commit to see its files here.</p>
-<pre class="clone">git remote add origin {{.CloneURL}}
-git push -u origin main</pre>{{end}}
+{{define "empty"}}<div class="box"><div class="boxhead"><strong>Quick setup</strong></div>
+<div class="boxbody"><p class="muted">This repository is empty. Push a commit to see its files here.</p>
+<pre class="cmd"><span class="prompt">$ </span>git remote add origin {{.CloneURL}}
+<span class="prompt">$ </span>git push -u origin main</pre></div></div>{{end}}
 
 {{define "dir"}}
+<div class="withaside">
+<div class="main">
 <div class="box">
   <table class="listing">
-  {{range .Items}}<tr><td class="icon">{{if .IsDir}}📁{{else}}📄{{end}}</td><td>{{if .URL}}<a href="{{.URL}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</td><td class="size">{{if not .IsDir}}{{fmtSize .Size}}{{end}}</td></tr>
-  {{else}}<tr><td class="muted">Empty directory</td></tr>{{end}}
+  {{range .Items}}<tr><td class="icon">{{if .IsDir}}{{template "icon-dir"}}{{else}}{{template "icon-file"}}{{end}}</td><td class="name">{{if .URL}}<a href="{{.URL}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</td><td class="size">{{if not .IsDir}}{{fmtSize .Size}}{{end}}</td></tr>
+  {{else}}<tr><td class="muted pad">Empty directory</td></tr>{{end}}
   </table>
 </div>
-{{if .Readme}}<div class="box"><div class="boxhead">{{.ReadmeAt}}</div><article class="markdown-body">{{.Readme}}</article></div>{{end}}
-{{if and (eq (len .Crumbs) 1) .CloneURL}}<p class="muted">Clone: <code>{{.CloneURL}}</code></p>{{end}}
+{{if .Readme}}<div class="box"><div class="boxhead"><strong>{{.ReadmeAt}}</strong></div><article class="markdown-body">{{.Readme}}</article></div>{{end}}
+</div>
+{{if .IsRoot}}<aside class="about">
+  <h2>About</h2>
+  {{with .Meta}}{{if .Description}}<p class="aboutdesc">{{.Description}}</p>{{end}}
+  {{if .Homepage}}<p class="abouthome"><a href="{{.Homepage}}" rel="noopener noreferrer nofollow">{{.HomepageHost}}</a></p>{{end}}
+  {{if .Topics}}<p class="topics">{{range .Topics}}<span class="topic">{{.}}</span>{{end}}</p>{{end}}
+  {{else}}<p class="muted">No description provided.</p>{{end}}
+  {{if .CloneURL}}<h3>Clone</h3><code class="cloneurl">git clone {{.CloneURL}}</code>{{end}}
+</aside>{{end}}
+</div>
 {{end}}
 
 {{define "file"}}
 <div class="box">
-  <div class="boxhead"><span>{{.File}} <span class="muted">· {{fmtSize .Size}}</span></span><a href="{{.RawURL}}">Raw</a></div>
+  <div class="boxhead"><span><strong>{{.File}}</strong> <span class="muted">· {{fmtSize .Size}}</span></span><a class="btn" href="{{.RawURL}}">Raw</a></div>
   {{if .Markdown}}<article class="markdown-body">{{.Markdown}}</article>
   {{else if .ImageURL}}<div class="imgview"><img src="{{.ImageURL}}" alt="{{.File}}"></div>
   {{else if .Note}}<p class="note">{{.Note}} <a href="{{.RawURL}}">View raw</a></p>

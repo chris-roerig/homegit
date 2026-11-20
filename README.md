@@ -132,6 +132,20 @@ Config is organized by role:
 - Like the SSH server it has no authentication and listens on all interfaces, so anyone on your network can read your code.
 - Markdown uses a small built-in renderer. Raw HTML in READMEs is limited to a safe set of tags.
 
+### Project metadata
+
+Add an optional `.homegit-meta` file (JSON) to a project's root and the web UI shows it in an **About** sidebar on the repo page, and the description in the repository list:
+
+```json
+{
+  "description": "A tiny personal Git server",
+  "homepage": "https://example.com/homegit",
+  "topics": ["go", "git-server"]
+}
+```
+
+Commit and push it like any other file. All fields are optional and display-only: `description` (up to 350 characters), `homepage` (an `http` or `https` URL), and `topics` (up to 20 lowercase tags of letters, digits, and hyphens). Invalid values are ignored, and unknown keys are allowed.
+
 ## Auto-start on Boot
 
 **Using Homebrew:**
