@@ -107,6 +107,11 @@ type listItem struct {
 	Size  int64
 }
 
+type repoCard struct {
+	Name     string
+	CloneURL string
+}
+
 type page struct {
 	Title    string
 	Kind     string // "home", "dir", "file", "error", "empty"
@@ -117,7 +122,7 @@ type page struct {
 	Sidebar  []*node
 	Truncate bool
 
-	Repos []string
+	Repos []repoCard
 
 	Items    []listItem
 	Readme   template.HTML
@@ -225,7 +230,11 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, r, "", http.StatusInternalServerError, "Could not read repositories")
 		return
 	}
-	s.render(w, http.StatusOK, &page{Title: "Repositories", Kind: "home", Repos: repos})
+	cards := make([]repoCard, len(repos))
+	for i, name := range repos {
+		cards[i] = repoCard{Name: name, CloneURL: s.cloneURL(r, name)}
+	}
+	s.render(w, http.StatusOK, &page{Title: "Repositories", Kind: "home", Repos: cards})
 }
 
 // loadRepo validates the repo and path, loading the tree. On failure it
