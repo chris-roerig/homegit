@@ -99,6 +99,22 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .error { text-align: center; padding: 48px 0; }
 .error h1 { font-size: 48px; font-weight: 300; margin: 0 0 8px; color: var(--muted); }
 
+/* Repo root: main column plus About sidebar */
+.withaside { display: flex; gap: 24px; align-items: flex-start; }
+.withaside .main { flex: 1; min-width: 0; }
+.about { width: 296px; flex: none; }
+.about h2 { font-size: 16px; font-weight: 600; margin: 0 0 12px; }
+.about h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; padding-top: 16px; border-top: 1px solid var(--border-muted); }
+.about p { margin: 0 0 12px; }
+.aboutdesc { overflow-wrap: anywhere; }
+.abouthome a { font-weight: 600; overflow-wrap: anywhere; }
+.topics { display: flex; flex-wrap: wrap; gap: 6px; }
+.topic { background: #ddf4ff; color: #0969da; border-radius: 2em; padding: 0 10px; font-size: 12px;
+  font-weight: 500; line-height: 22px; }
+.desc { margin: 4px 0 0; color: var(--muted); overflow-wrap: anywhere; }
+@media (prefers-color-scheme: dark) { .topic { background: #388bfd1a; color: #4493f8; } }
+@media (max-width: 1000px) { .withaside { flex-direction: column; } .about { width: 100%; } }
+
 /* Code */
 pre.cmd { background: var(--code-bg); color: var(--fg); border-radius: 6px; padding: 16px; overflow-x: auto;
   line-height: 1.6; margin: 0 0 16px; font-size: 12px; }

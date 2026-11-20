@@ -48,7 +48,7 @@
 
 {{define "home"}}<main class="single">
   <div class="pagehead"><h1>Repositories</h1><span class="counter">{{len .Repos}}</span></div>
-  {{if .Repos}}<ul class="repolist">{{range .Repos}}<li><a class="repolink" href="/{{.Name}}/tree/">{{.Name}}</a><code class="cloneurl">{{.CloneURL}}</code></li>{{end}}</ul>
+  {{if .Repos}}<ul class="repolist">{{range .Repos}}<li><a class="repolink" href="/{{.Name}}/tree/">{{.Name}}</a>{{if .Description}}<p class="desc">{{.Description}}</p>{{end}}<code class="cloneurl">{{.CloneURL}}</code></li>{{end}}</ul>
   {{else}}<div class="blankslate"><p>No repositories yet.</p><p class="muted">Create one with <code>homegit init</code>.</p></div>{{end}}
 </main>{{end}}
 
@@ -60,6 +60,8 @@
 <span class="prompt">$ </span>git push -u origin main</pre></div></div>{{end}}
 
 {{define "dir"}}
+<div class="withaside">
+<div class="main">
 <div class="box">
   <table class="listing">
   {{range .Items}}<tr><td class="icon">{{if .IsDir}}{{template "icon-dir"}}{{else}}{{template "icon-file"}}{{end}}</td><td class="name">{{if .URL}}<a href="{{.URL}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</td><td class="size">{{if not .IsDir}}{{fmtSize .Size}}{{end}}</td></tr>
@@ -67,7 +69,16 @@
   </table>
 </div>
 {{if .Readme}}<div class="box"><div class="boxhead"><strong>{{.ReadmeAt}}</strong></div><article class="markdown-body">{{.Readme}}</article></div>{{end}}
-{{if and (eq (len .Crumbs) 1) .CloneURL}}<div class="box"><div class="boxhead"><strong>Clone</strong></div><div class="boxbody"><pre class="cmd"><span class="prompt">$ </span>git clone {{.CloneURL}}</pre></div></div>{{end}}
+</div>
+{{if .IsRoot}}<aside class="about">
+  <h2>About</h2>
+  {{with .Meta}}{{if .Description}}<p class="aboutdesc">{{.Description}}</p>{{end}}
+  {{if .Homepage}}<p class="abouthome"><a href="{{.Homepage}}" rel="noopener noreferrer nofollow">{{.HomepageHost}}</a></p>{{end}}
+  {{if .Topics}}<p class="topics">{{range .Topics}}<span class="topic">{{.}}</span>{{end}}</p>{{end}}
+  {{else}}<p class="muted">No description provided.</p>{{end}}
+  {{if .CloneURL}}<h3>Clone</h3><code class="cloneurl">git clone {{.CloneURL}}</code>{{end}}
+</aside>{{end}}
+</div>
 {{end}}
 
 {{define "file"}}

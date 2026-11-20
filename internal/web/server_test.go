@@ -43,6 +43,7 @@ func newTestServer(t *testing.T) *Server {
 	write(t, filepath.Join(work, "docs", "guide.md"), "# Guide\n\n[up](../README.md)\n")
 	write(t, filepath.Join(work, "src", "main.go"), "package main\n\n// <b>hi</b>\n")
 	write(t, filepath.Join(work, "img", "logo.png"), "\x89PNG\x00\x01")
+	write(t, filepath.Join(work, MetaFile), `{"description":"A <b>demo</b> project","homepage":"https://example.com/demo","topics":["go","git"]}`)
 	write(t, filepath.Join(work, "bin.dat"), "a\x00b")
 	write(t, filepath.Join(work, "x.svg"), `<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>`)
 	git(t, work, "add", ".")
