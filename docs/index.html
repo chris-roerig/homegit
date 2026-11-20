@@ -116,6 +116,7 @@
       <div class="pill">homegit start</div>
       <div class="pill">homegit clone</div>
       <div class="pill">homegit list</div>
+      <div class="pill">homegit add-meta</div>
       <div class="pill">homegit backup</div>
       <div class="pill">homegit doctor</div>
       <div class="pill ghost">and more…</div>
@@ -130,7 +131,7 @@
       </div>
       <div class="feature">
         <h3><span class="dot">02</span> Keep it simple.</h3>
-        <p>A single binary with an embedded SSH server. No separate database, accounts, or web dashboard to maintain.</p>
+        <p>A single binary with an embedded SSH server and a read-only web browser for your repos. No separate database or accounts to maintain.</p>
       </div>
       <div class="feature">
         <h3><span class="dot">03</span> Just use Git.</h3>
@@ -140,6 +141,14 @@
         <h3><span class="dot">04</span> Update in place.</h3>
         <p>Installed via the shell script? Run <code>homegit update</code>. Installed via Homebrew? Use <code>brew upgrade</code>.</p>
       </div>
+      <div class="feature">
+        <h3><span class="dot">05</span> Browse in your browser.</h3>
+        <p>Open <code>http://your-server:8222</code> for a GitHub-style view: file tree, rendered READMEs, and a search box for your repos. Add a description with <code>homegit add-meta</code>.</p>
+      </div>
+      <div class="feature">
+        <h3><span class="dot">06</span> Lock it down.</h3>
+        <p>Optionally limit who can connect with <code>allowed_ips</code> in your config. It applies to both Git and the web UI. Turn the web UI off with <code>--no-web</code>.</p>
+      </div>
     </div>
 
     <hr class="separator">
@@ -148,7 +157,7 @@
       <h2>Single computer</h2>
       <p>Host repositories on the machine you're using. During setup, choose &ldquo;store repos on this computer.&rdquo;</p>
       <pre><span class="prompt">$ </span>homegit setup            <span class="comment"># choose: on this computer</span>
-<span class="prompt">$ </span>homegit start            <span class="output"># homegit 1.3.0: server started</span>
+<span class="prompt">$ </span>homegit start            <span class="output"># server started</span>
 
 <span class="prompt">$ </span>cd my-project
 <span class="prompt">$ </span>homegit init

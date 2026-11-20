@@ -47,8 +47,19 @@
 {{end}}{{end}}{{end}}
 
 {{define "home"}}<main class="single">
-  <div class="pagehead"><h1>Repositories</h1><span class="counter">{{len .Repos}}</span></div>
-  {{if .Repos}}<ul class="repolist">{{range .Repos}}<li><a class="repolink" href="/{{.Name}}/tree/">{{.Name}}</a>{{if .Description}}<p class="desc">{{.Description}}</p>{{end}}<code class="cloneurl">{{.CloneURL}}</code></li>{{end}}</ul>
+  <div class="pagehead"><h1>Repositories</h1><span class="counter" id="repo-count">{{len .Repos}}</span></div>
+  {{if .Repos}}
+  <div class="repofilter" id="repo-filter-wrap" hidden>
+    <input type="search" id="repo-filter" placeholder="Find a repository…" aria-label="Find a repository" autocomplete="off" spellcheck="false">
+  </div>
+  <ul class="repolist" id="repo-list">{{range .Repos}}<li data-repo data-name="{{.Name}}" data-text="{{.Search}}">
+    <a class="repolink" href="/{{.Name}}/tree/">{{.Name}}</a>
+    {{if .Description}}<p class="desc">{{.Description}}</p>{{end}}
+    {{if .Topics}}<p class="topics">{{range .Topics}}<span class="topic">{{.}}</span>{{end}}</p>{{end}}
+    <code class="cloneurl">{{.CloneURL}}</code>
+  </li>{{end}}</ul>
+  <div class="blankslate" id="repo-empty" hidden><p>No repositories match your search.</p></div>
+  <script src="/_static/filter.js" defer></script>
   {{else}}<div class="blankslate"><p>No repositories yet.</p><p class="muted">Create one with <code>homegit init</code>.</p></div>{{end}}
 </main>{{end}}
 

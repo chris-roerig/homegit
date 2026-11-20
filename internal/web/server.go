@@ -114,6 +114,8 @@ type repoCard struct {
 	Name        string
 	CloneURL    string
 	Description string
+	Topics      []string
+	Search      string // lowercased description and topics, for the client-side filter
 }
 
 type page struct {
@@ -153,7 +155,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h := w.Header()
 	h.Set("X-Content-Type-Options", "nosniff")
 	h.Set("Referrer-Policy", "same-origin")
-	h.Set("Content-Security-Policy", "default-src 'none'; style-src 'self'; img-src 'self' data: https: http:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+	h.Set("Content-Security-Policy", "default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' data: https: http:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
 
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		h.Set("Allow", "GET, HEAD")
@@ -243,6 +245,8 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 		cards[i] = repoCard{Name: name, CloneURL: s.cloneURL(r, name)}
 		if m := s.store.ReadMeta(name); m != nil {
 			cards[i].Description = m.Description
+			cards[i].Topics = m.Topics
+			cards[i].Search = strings.ToLower(m.Description + " " + strings.Join(m.Topics, " "))
 		}
 	}
 	s.render(w, http.StatusOK, &page{Title: "Repositories", Kind: "home", Repos: cards})

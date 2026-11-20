@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/url"
@@ -107,4 +108,23 @@ func (s *Store) ReadMeta(name string) *Meta {
 		return nil
 	}
 	return m
+}
+
+// Marshal returns m as indented JSON suitable for writing to MetaFile, with
+// empty fields omitted.
+func (m *Meta) Marshal() ([]byte, error) {
+	out := struct {
+		Description string   `json:"description,omitempty"`
+		Homepage    string   `json:"homepage,omitempty"`
+		Topics      []string `json:"topics,omitempty"`
+	}{m.Description, m.Homepage, m.Topics}
+
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(out); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

@@ -83,11 +83,18 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .pagehead h1 { margin: 0; font-size: 24px; font-weight: 400; }
 .counter { background: var(--inline-code-bg); border-radius: 2em; padding: 0 6px; font-size: 12px;
   font-weight: 500; line-height: 18px; }
-.repolist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: 6px; }
-.repolist li { padding: 16px; border-top: 1px solid var(--border); }
-.repolist li:first-child { border-top: 0; }
-.repolink { font-size: 20px; font-weight: 600; word-break: break-all; }
-.cloneurl { display: block; margin-top: 6px; color: var(--muted); word-break: break-all; }
+.repofilter { margin-bottom: 16px; }
+.repofilter input { width: 100%; height: 32px; padding: 5px 12px; font: inherit; color: var(--fg);
+  background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; }
+.repofilter input::placeholder { color: var(--muted); }
+.repofilter input:focus { outline: 2px solid var(--link); outline-offset: -1px; border-color: var(--link); }
+.repolist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.repolist li { padding: 24px 0; border-bottom: 1px solid var(--border); }
+.repolist .repolink { font-size: 20px; font-weight: 600; word-break: break-all; }
+.repolist .desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 75ch; overflow-wrap: anywhere; }
+.repolist .topics { margin: 8px 0 0; }
+.cloneurl { display: block; margin-top: 12px; color: var(--muted); font-size: 12px; word-break: break-all; }
+[hidden] { display: none !important; }
 .blankslate { text-align: center; padding: 48px 16px; border: 1px solid var(--border); border-radius: 6px; }
 .blankslate p:first-child { font-size: 20px; margin: 0 0 8px; }
 .error { text-align: center; padding: 48px 0; }
@@ -105,7 +112,6 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .topics { display: flex; flex-wrap: wrap; gap: 6px; }
 .topic { background: #ddf4ff; color: #0969da; border-radius: 2em; padding: 0 10px; font-size: 12px;
   font-weight: 500; line-height: 22px; }
-.desc { margin: 4px 0 0; color: var(--muted); overflow-wrap: anywhere; }
 @media (max-width: 1000px) { .withaside { flex-direction: column; } .about { width: 100%; } }
 
 /* Code */
