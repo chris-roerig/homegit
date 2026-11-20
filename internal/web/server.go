@@ -31,13 +31,15 @@ const (
 type Server struct {
 	store   *Store
 	sshPort int
+	version string
 	tmpl    *template.Template
 	static  http.Handler
 }
 
 // New creates a Server that browses bare repositories in reposDir. sshPort is
-// only used to display clone URLs.
-func New(reposDir string, sshPort int) (*Server, error) {
+// only used to display clone URLs. version, if non-empty, is shown in the
+// page header.
+func New(reposDir string, sshPort int, version string) (*Server, error) {
 	t, err := template.New("").Funcs(template.FuncMap{
 		"fmtSize": fmtSize,
 	}).ParseFS(assets, "templates/*.html")
@@ -51,6 +53,7 @@ func New(reposDir string, sshPort int) (*Server, error) {
 	return &Server{
 		store:   &Store{ReposDir: reposDir},
 		sshPort: sshPort,
+		version: displayVersion(version),
 		tmpl:    t,
 		static:  http.StripPrefix("/_static/", http.FileServer(http.FS(sub))),
 	}, nil
@@ -115,6 +118,7 @@ type repoCard struct {
 
 type page struct {
 	Title    string
+	Version  string
 	Kind     string // "home", "dir", "file", "error", "empty"
 	Repo     string
 	Branch   string
@@ -204,6 +208,7 @@ func repoURL(repo, kind, p string) string {
 // ---- handlers ----
 
 func (s *Server) render(w http.ResponseWriter, status int, p *page) {
+	p.Version = s.version
 	var buf bytes.Buffer
 	if err := s.tmpl.ExecuteTemplate(&buf, "layout", p); err != nil {
 		log.Printf("web: template error: %v", err)
@@ -603,4 +608,13 @@ func fmtSize(n int64) string {
 	default:
 		return fmt.Sprintf("%.1f MB", float64(n)/(1<<20))
 	}
+}
+
+// displayVersion formats v for the header as "v1.2.3". Empty stays empty.
+func displayVersion(v string) string {
+	v = strings.TrimSpace(v)
+	if v == "" || strings.HasPrefix(v, "v") {
+		return v
+	}
+	return "v" + v
 }

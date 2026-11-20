@@ -1,19 +1,12 @@
-/* GitHub-style light/dark theme (Primer colors). No external resources. */
+/* GitHub light theme (Primer colors). No external resources. */
 :root {
+  color-scheme: light;
   --canvas: #ffffff; --subtle: #f6f8fa; --fg: #1f2328; --muted: #59636e;
   --border: #d1d9e0; --border-muted: #d1d9e0b3; --link: #0969da; --accent: #fd8c73;
   --hover: #818b981f; --active: #d1d9e07a; --folder: #54aeff;
   --code-bg: #f6f8fa; --inline-code-bg: #818b981f; --btn-bg: #f6f8fa;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #0d1117; --subtle: #151b23; --fg: #f0f6fc; --muted: #9198a1;
-    --border: #3d444d; --border-muted: #3d444db3; --link: #4493f8; --accent: #f78166;
-    --hover: #656c7633; --active: #656c7666; --folder: #54aeff;
-    --code-bg: #151b23; --inline-code-bg: #656c7633; --btn-bg: #212830;
-  }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--canvas); color: var(--fg); font-family: var(--sans);
@@ -31,6 +24,7 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 600; }
 .brand:hover { text-decoration: none; }
 .brand svg { width: 28px; height: 30px; }
+.topbar .ver { color: var(--muted); font-size: 12px; font-family: var(--mono); margin-left: -2px; }
 .knob { fill: var(--subtle); }
 .topbar .sep { color: var(--muted); }
 .topbar .reponame { font-weight: 600; }
@@ -112,7 +106,6 @@ code, pre { font-family: var(--mono); font-size: 12px; }
 .topic { background: #ddf4ff; color: #0969da; border-radius: 2em; padding: 0 10px; font-size: 12px;
   font-weight: 500; line-height: 22px; }
 .desc { margin: 4px 0 0; color: var(--muted); overflow-wrap: anywhere; }
-@media (prefers-color-scheme: dark) { .topic { background: #388bfd1a; color: #4493f8; } }
 @media (max-width: 1000px) { .withaside { flex-direction: column; } .about { width: 100%; } }
 
 /* Code */

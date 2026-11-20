@@ -35,7 +35,7 @@ func Serve(cfg *config.Config, noWeb bool) error {
 // startWeb launches the web browser in the background. A failure (for example
 // the port being in use) is logged and does not stop the SSH server.
 func startWeb(ctx context.Context, cfg *config.Config) {
-	srv, err := web.New(cfg.Server.ReposDir, cfg.Server.Port)
+	srv, err := web.New(cfg.Server.ReposDir, cfg.Server.Port, Version)
 	if err != nil {
 		fmt.Printf("Web UI disabled: %v\n", err)
 		return
