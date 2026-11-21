@@ -22,6 +22,7 @@ func Help(cfg *config.Config) error {
 	fmt.Println("  stop        Stop daemon server")
 	fmt.Println("  restart     Restart daemon server")
 	fmt.Println("  status      Check daemon status")
+	fmt.Println("  add-meta    Create a .homegit-meta file (description, homepage, topics) for the web UI")
 	fmt.Println("  list        List all repositories")
 	fmt.Println("  clone       Clone a repository from the server")
 	fmt.Println("  backup      Backup a repository to tar.gz")

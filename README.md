@@ -73,6 +73,7 @@ That's it. Your code is now on your machine, accessible from anywhere on your ne
 ```bash
 homegit setup      # First-time configuration
 homegit init       # Initialize git repo and add remote
+homegit add-meta   # Create a .homegit-meta file (description, homepage, topics)
 homegit config     # Edit configuration
 homegit start      # Start server
 homegit stop       # Stop server
@@ -125,7 +126,7 @@ Config is organized by role:
 
 ## Web UI
 
-`homegit serve` (and `homegit start`) also serve a read-only repo browser at `http://<hostname>:8222`. It has a file tree sidebar, a file viewer, and rendered Markdown (including each directory's README). It shows the default branch (HEAD) only.
+`homegit serve` (and `homegit start`) also serve a read-only repo browser at `http://<hostname>:8222`. It has a file tree sidebar, a file viewer, and rendered Markdown (including each directory's README). The home page lists your repos GitHub-style, with a live search box that fuzzy-matches repo names (so `bbot` finds `buenobot`) and also matches descriptions and topics. It shows the default branch (HEAD) only.
 
 - Skip it for one run: `homegit serve --no-web`
 - Turn it off permanently: set `server.web_enabled` to `false` (`homegit setup` asks), or change the port with `server.web_port`.
@@ -144,7 +145,7 @@ Add an optional `.homegit-meta` file (JSON) to a project's root and the web UI s
 }
 ```
 
-Commit and push it like any other file. All fields are optional and display-only: `description` (up to 350 characters), `homepage` (an `http` or `https` URL), and `topics` (up to 20 lowercase tags of letters, digits, and hyphens). Invalid values are ignored, and unknown keys are allowed.
+Create it with `homegit add-meta` (it prompts, or pass `--description`, `--homepage`, `--topics`; add `--force` to overwrite), or write it by hand. Commit and push it like any other file. All fields are optional and display-only: `description` (up to 350 characters), `homepage` (an `http` or `https` URL), and `topics` (up to 20 lowercase tags of letters, digits, and hyphens). Invalid values are ignored, and unknown keys are allowed.
 
 ## Auto-start on Boot
 
